@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — RateFoodPerth{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 120px; height: 120px; font-size: 3rem;">
+                        <i class="bi bi-person-fill text-secondary"></i>
+                    </div>
+                    <h3 class="fw-bold">PerthFoodie99</h3>
+                    <p class="text-muted">Joined March 2026</p>
+                    <hr>
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <h5 class="mb-0">12</h5>
+                            <small class="text-muted">Reviews</small>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">34</h5>
+                            <small class="text-muted">Followers</small>
+                        </div>
+                    </div>
+                    <a href="/settings" class="btn btn-outline-primary btn-sm mt-3 w-100">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h4 class="mb-4">My Recent Reviews</h4>
+            
+            <div class="card mb-3 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-1"><a href="/restaurant/1" class="text-decoration-none text-dark">Lalla Rookh</a></h5>
+                            <div class="text-warning mb-2">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <span class="text-muted ms-2">4.5/5</span>
+                            </div>
+                        </div>
+                        <span class="badge bg-light text-dark">2 days ago</span>
+                    </div>
+                    <p class="card-text">Best pasta in the CBD. The atmosphere is great for a Friday night.</p>
+                </div>
+            </div>
+
+            </div>
+    </div>
+</div>
+{% endblock %}
