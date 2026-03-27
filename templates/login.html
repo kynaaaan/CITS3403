@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Log In — RateFoodPerth{% endblock %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+        
+        <div class="card shadow-lg border-0 p-4">
+            <div class="card-body text-center">
+                
+                <h2 class="mb-4">
+                    <span class="logo-text">Welcome back</span><span class="logo-dot">.</span>
+                </h2>
+                <p class="text-muted mb-4">Log in to review your favorite Perth spots.</p>
+
+                <form action="/login" method="POST">
+                    <div class="form-floating mb-3 text-start">
+                        <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" required>
+                        <label for="emailInput">Email address</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3 text-start">
+                        <input type="password" class="form-control" id="passwordInput" placeholder="Password" required>
+                        <label for="passwordInput">Password</label>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label small" for="rememberMe">Remember me</label>
+                        </div>
+                        <a href="#" class="small text-decoration-none">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Log In</button>
+                </form>
+
+                <hr class="my-4">
+
+                <p class="mb-0">New to RateFoodPerth? <a href="/register" class="text-decoration-none fw-bold">Sign up</a></p>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
