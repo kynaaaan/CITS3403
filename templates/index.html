@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Home — RateFoodPerth{% endblock %}
+
+{% block content %}
+<section class="hero-section text-white d-flex align-items-center">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-3 logo-text">Hungry in Perth?</h1>
+        <p class="lead mb-4">Discover, rate, and share the best hidden gems in WA.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="/search" class="btn btn-primary btn-lg px-4">Find Food</a>
+            <a href="/register" class="btn btn-outline-light btn-lg px-4">Join Community</a>
+        </div>
+    </div>
+</section>
+<section class="container py-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold">Trending in Northbridge</h2>
+            <p class="text-muted">Most reviewed spots this week</p>
+        </div>
+        <a href="/search" class="text-decoration-none">View All <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm restaurant-card">
+                <img src="https://via.placeholder.com/400x250" class="card-img-top" alt="Restaurant Image">
+                <div class="card-body">
+                    <span class="badge bg-light text-dark mb-2">Italian</span>
+                    <h5 class="card-title fw-bold">Lalla Rookh</h5>
+                    <p class="text-warning mb-2">
+                        <i class="bi bi-star-fill"></i> 4.8 <span class="text-muted small">(128 reviews)</span>
+                    </p>
+                    <p class="card-text text-muted small">Legendary pasta and a killer wine list in the heart of the CBD.</p>
+                    <a href="/restaurant/1" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+        </div>
+</section>
+{% endblock %}
