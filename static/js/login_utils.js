@@ -7,11 +7,14 @@ function check_password(pass) {
     2. Atleast 1 number
     3. Atleast 1 caps
     4. Atleast 1 special character
+
+    Returns an array of error messages. Empty array means the password is valid.
     */
-   
+
+    let errors = [];
+
     if (pass.length < 8) {
-        console.log("password not longer than 8 chars");
-        return false;
+        errors.push("Password must be at least 8 characters long");
     }
 
     let i = 0;
@@ -33,9 +36,28 @@ function check_password(pass) {
         i++;
     }
 
-    if (!caps_flag) console.log("missing uppercase letter");
-    if (!num_flag) console.log("missing number");
-    if (!special_flag) console.log("missing special character");
+    if (!caps_flag) errors.push("Password must contain at least 1 uppercase letter");
+    if (!num_flag) errors.push("Password must contain at least 1 number");
+    if (!special_flag) errors.push("Password must contain at least 1 special character");
 
-    return caps_flag && num_flag && special_flag;
+    return errors;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+        const password = document.getElementById('passwordInput').value;
+        const errorDiv = document.getElementById('passwordError');
+        const errors = check_password(password);
+
+        if (errors.length > 0) {
+            e.preventDefault();
+            errorDiv.innerHTML = errors.join('<br>');
+            errorDiv.style.display = 'block';
+        } else {
+            errorDiv.style.display = 'none';
+        }
+    });
+});
