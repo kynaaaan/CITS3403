@@ -23,6 +23,7 @@
                     <div class="form-floating mb-3 text-start">
                         <input type="password" class="form-control" id="passwordInput" placeholder="Password" required>
                         <label for="passwordInput">Password</label>
+                        <div id="passwordError" class="text-danger small mt-1" style="display:none;"></div>
                     </div>
 
                     <div class="d-flex justify-content-between mb-4">
@@ -44,4 +45,9 @@
         
     </div>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/login_utils.js"></script>
 {% endblock %}
