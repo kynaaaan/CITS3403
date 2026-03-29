@@ -16,10 +16,22 @@ h2 {
     background-color: #ff7e5f;
     border: none;
     color: white;
+
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 12px;
+
+    transition: 0.3s;
+
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
 }
 
 .btn-primary:hover {
     background-color: #db5436;
+    transform: scale(1.03);
 }
 
 body {
@@ -34,13 +46,7 @@ h2 {
     border-color: #ff7e5f;
     box-shadow: 0 0 0 0.2rem rgba(255, 126, 95, 0.25);
 }
-.btn-primary {
-    transition: 0.3s;
-}
 
-.btn-primary:hover {
-    transform: scale(1.03);
-}
 .card {
     transition: 0.3s;
 }
