@@ -1,0 +1,81 @@
+body {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    font-family: Arial, sans-serif;
+}
+
+.card {
+    border: none;
+    border-radius: 20px;
+}
+
+h2 {
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #ff7e5f;
+    border: none;
+    color: white;
+
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 12px;
+
+    transition: 0.3s;
+
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-primary:hover {
+    background-color: #db5436;
+    transform: scale(1.03);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+
+}
+h2 {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.form-control:focus {
+    border-color: #ff7e5f;
+    box-shadow: 0 0 0 0.2rem rgba(255, 126, 95, 0.25);
+}
+
+.card {
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+.input-icon {
+    position: absolute;
+    top: 38px;
+    left: 12px;
+    color: #999;
+    font-size: 16px;
+}
+.form-control {
+    border-radius: 10px;
+    padding: 12px;
+}
+label{
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+.mb-3.position-relative:focus-within {
+    transform: scale(1.02);
+}
+.mb-3.position-relative:focus-within .form-control {
+    border-color: #ff7e5f;
+    box-shadow: 0 0 0 0.2rem rgba(255, 126, 95, 0.25);
+}
+.mb-3.position-relative:focus-within .input-icon {
+    color: #ff7e5f;
+}
