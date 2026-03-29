@@ -63,3 +63,13 @@ label{
     font-weight: 500;
     margin-bottom: 4px;
 }
+.mb-3.position-relative:focus-within {
+    transform: scale(1.02);
+}
+.mb-3.position-relative:focus-within .form-control {
+    border-color: #ff7e5f;
+    box-shadow: 0 0 0 0.2rem rgba(255, 126, 95, 0.25);
+}
+.mb-3.position-relative:focus-within .input-icon {
+    color: #ff7e5f;
+}
