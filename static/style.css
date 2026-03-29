@@ -48,3 +48,18 @@ h2 {
 .card:hover {
     transform: translateY(-4px);
 }
+.input-icon {
+    position: absolute;
+    top: 38px;
+    left: 12px;
+    color: #999;
+    font-size: 16px;
+}
+.form-control {
+    border-radius: 10px;
+    padding: 12px;
+}
+label{
+    font-weight: 500;
+    margin-bottom: 4px;
+}
