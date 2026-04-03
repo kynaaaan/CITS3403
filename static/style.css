@@ -1,59 +1,138 @@
+/* ===================================================================
+   style.css — RateFoodPerth custom styles
+   ===================================================================
+   Sections:
+     1. Base / body
+     2. Navbar
+     3. Logo
+     4. Footer
+     5. Buttons
+     6. Forms
+     7. Cards (global)
+     8. Hero section (index.html)
+     9. Feed section (index.html)
+    10. Avatar circles (index.html, profile.html)
+    11. Like buttons (index.html)
+    12. Feed tabs (index.html)
+   =================================================================== */
+
+
+/* ── 1. BASE ───────────────────────────────────────────────────────── */
 body {
     background: linear-gradient(to right, #ff7e5f, #feb47b);
-    font-family: Arial, sans-serif;
-}
-
-.card {
-    border: none;
-    border-radius: 20px;
+    font-family: 'DM Sans', 'Poppins', Arial, sans-serif;
 }
 
 h2 {
-    font-weight: bold;
-}
-
-.btn-primary {
-    background-color: #ff7e5f;
-    border: none;
-    color: white;
-
     font-weight: 600;
     letter-spacing: 0.5px;
-    border-radius: 12px;
-
-    transition: 0.3s;
-
 }
 
-.btn-primary:active {
-    transform: scale(0.98);
+
+/* ── 2. NAVBAR ─────────────────────────────────────────────────────── */
+#main-navbar {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+#main-navbar .nav-link {
+    color: #444;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+#main-navbar .nav-link:hover {
+    color: #ff7e5f;
+}
+
+
+/* ── 3. LOGO ───────────────────────────────────────────────────────── */
+.logo-text {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    color: #1a1a1a;
+    font-size: 1.2rem;
+    letter-spacing: -0.5px;
+}
+
+.logo-dot {
+    color: #ff7e5f;
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+
+/* ── 4. FOOTER ─────────────────────────────────────────────────────── */
+.site-footer {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    margin-top: 4rem;
+}
+
+.footer-logo {
+    font-size: 1rem;
+}
+
+.footer-tagline {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.footer-links a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+
+/* ── 5. BUTTONS ────────────────────────────────────────────────────── */
+.btn-primary {
+    background-color: #ff7e5f;
+    border-color: #ff7e5f;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    border-radius: 12px;
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .btn-primary:hover {
-    background-color: #db5436;
-    transform: scale(1.03);
+    background-color: #e86a4c;
+    border-color: #e86a4c;
+    transform: scale(1.02);
 }
 
-body {
-    font-family: 'Poppins', sans-serif;
+.btn-primary:active {
+    background-color: #d45a3a;
+    border-color: #d45a3a;
+    transform: scale(0.98);
+}
 
+
+/* ── 6. FORMS ──────────────────────────────────────────────────────── */
+.form-control {
+    border-radius: 10px;
+    padding: 12px;
 }
-h2 {
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
+
 .form-control:focus {
     border-color: #ff7e5f;
     box-shadow: 0 0 0 0.2rem rgba(255, 126, 95, 0.25);
 }
 
-.card {
-    transition: 0.3s;
+label {
+    font-weight: 500;
+    margin-bottom: 4px;
 }
 
-.card:hover {
-    transform: translateY(-4px);
-}
 .input-icon {
     position: absolute;
     top: 38px;
@@ -61,22 +140,188 @@ h2 {
     color: #999;
     font-size: 16px;
 }
-.form-control {
-    border-radius: 10px;
-    padding: 12px;
-}
-label{
-    font-weight: 500;
-    margin-bottom: 4px;
-}
+
 .mb-3.position-relative:focus-within {
     transform: scale(1.02);
 }
+
 .mb-3.position-relative:focus-within .form-control {
     border-color: #ff7e5f;
     box-shadow: 0 0 0 0.2rem rgba(255, 126, 95, 0.25);
 }
+
 .mb-3.position-relative:focus-within .input-icon {
+    color: #ff7e5f;
+}
+
+
+/* ── 7. CARDS (global) ─────────────────────────────────────────────── */
+.card {
+    border: none;
+    border-radius: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+
+/* ── 8. HERO SECTION ───────────────────────────────────────────────── */
+.hero-headline {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    font-size: 2.75rem;
+    color: #fff;
+    line-height: 1.15;
+    letter-spacing: -1px;
+}
+
+.hero-subtext {
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 1.05rem;
+    max-width: 480px;
+    line-height: 1.6;
+}
+
+/* 2×2 grid of stat cards in the hero */
+.hero-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    max-width: 340px;
+}
+
+.hero-stat-card {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 16px;
+    padding: 1.2rem 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-stat-number {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #fff;
+    line-height: 1.1;
+}
+
+.hero-stat-label {
+    font-size: 0.76rem;
+    color: rgba(255, 255, 255, 0.72);
+    margin-top: 4px;
+}
+
+
+/* ── 9. FEED SECTION ───────────────────────────────────────────────── */
+
+/* White surface below the hero — review cards sit on this */
+.feed-wrapper {
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 24px 24px 0 0;
+    margin-top: -1.5rem;
+    position: relative;
+    min-height: 60vh;
+}
+
+/* Clickable restaurant names */
+.restaurant-name:hover {
+    color: #ff7e5f !important;
+}
+
+/* Clickable reviewer usernames */
+.reviewer-name:hover {
+    color: #ff7e5f !important;
+    text-decoration: underline !important;
+}
+
+
+/* ── 10. AVATAR CIRCLES ────────────────────────────────────────────── */
+
+/* Standard avatar used in review cards */
+.avatar-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+    user-select: none;
+}
+
+/* Smaller avatar used in the sidebar leaderboard */
+.avatar-circle-sm {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+    user-select: none;
+}
+
+/* Rank number beside each entry in the Top Reviewers sidebar card */
+.rank-number {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #aaa;
+    width: 16px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+
+/* ── 11. LIKE BUTTONS ──────────────────────────────────────────────── */
+.like-btn {
+    border-radius: 20px;
+    font-size: 0.8rem;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+/* Active/liked state — uses the brand coral colour */
+.like-btn.liked {
+    background-color: #ff7e5f;
+    border-color: #ff7e5f;
+    color: #fff;
+}
+
+.like-btn.liked:hover {
+    background-color: #e86a4c;
+    border-color: #e86a4c;
+}
+
+
+/* ── 12. FEED TABS ─────────────────────────────────────────────────── */
+#feedTabs .nav-link {
+    color: #555;
+    border-radius: 20px;
+    padding: 0.4rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+#feedTabs .nav-link.active {
+    background-color: #ff7e5f;
+    color: #fff;
+}
+
+#feedTabs .nav-link:hover:not(.active) {
+    background-color: rgba(255, 126, 95, 0.12);
     color: #ff7e5f;
 }
 
