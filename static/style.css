@@ -79,3 +79,45 @@ label{
 .mb-3.position-relative:focus-within .input-icon {
     color: #ff7e5f;
 }
+
+/* Profile Styling */
+.streak-square {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+    transition: transform 0.2s;
+}
+.streak-square:hover {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+.streak-square {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+}
+.badge-box {
+    transition: transform 0.2s;
+}
+
+.badge-box:hover {
+    transform: scale(1.1);
+}
+
+.grayscale-filter {
+    filter: grayscale(100%);
+}
+
+.tiny-text {
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+.progress {
+    border-radius: 50px;
+    background-color: #f0f0f0;
+}
+
+.progress-bar {
+    border-radius: 50px;
+}
+/* End of Profile Styling */
