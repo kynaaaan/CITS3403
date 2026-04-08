@@ -366,3 +366,14 @@ label {
     border-radius: 50px;
 }
 /* End of Profile Styling */
+
+/* ── 13. RESTAURANT CARDS (search.html) ───────────────────────────── */
+
+/* Clickable card wrapper — remove default link colour */
+.restaurant-card {
+    cursor: pointer;
+}
+
+.restaurant-card:hover {
+    border-left: 3px solid #ff7e5f !important;
+}
