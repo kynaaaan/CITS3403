@@ -25,14 +25,14 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Rating</label>
-      <div class="fs-3">
-        <i class="bi bi-star"></i>
-        <i class="bi bi-star"></i>
-        <i class="bi bi-star"></i>
-        <i class="bi bi-star"></i>
-        <i class="bi bi-star"></i>
-      </div>
+        <label class="form-label">Rating</label>
+        <div id="stars" class="fs-3">
+            <i class="bi bi-star" data-value="1"></i>
+            <i class="bi bi-star" data-value="2"></i>
+            <i class="bi bi-star" data-value="3"></i>
+            <i class="bi bi-star" data-value="4"></i>
+            <i class="bi bi-star" data-value="5"></i>
+        </div>
     </div>
 
     <div class="mb-3">
@@ -61,6 +61,31 @@
   </form>
 
 </div>
+<script>
+var selectedRating = 0;
+
+var stars = document.querySelectorAll("#stars i");
+
+stars.forEach(function(star) {
+  star.addEventListener("click", function() {
+    selectedRating = star.getAttribute("data-value");
+    updateStars();
+  });
+});
+
+function updateStars() {
+  stars.forEach(function(star) {
+    if (star.getAttribute("data-value") <= selectedRating) {
+      star.classList.remove("bi-star");
+      star.classList.add("bi-star-fill", "text-warning");
+    } else {
+      star.classList.add("bi-star");
+      star.classList.remove("bi-star-fill", "text-warning");
+    }
+  });
+}
+</script>
+
 
 </body>
 </html>
