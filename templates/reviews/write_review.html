@@ -41,14 +41,14 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Craving Tags</label>
-      <div class="d-flex flex-wrap gap-2">
-        <span class="badge bg-light text-dark border">Spicy</span>
-        <span class="badge bg-light text-dark border">Sweet</span>
-        <span class="badge bg-light text-dark border">Cheap</span>
-        <span class="badge bg-light text-dark border">Hearty</span>
-        <span class="badge bg-light text-dark border">Healthy</span>
-      </div>
+        <label class="form-label">Craving Tags</label>
+        <div id="tags" class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-outline-dark tag">Spicy</button>
+            <button type="button" class="btn btn-outline-dark tag">Sweet</button>
+            <button type="button" class="btn btn-outline-dark tag">Cheap</button>
+            <button type="button" class="btn btn-outline-dark tag">Hearty</button>
+            <button type="button" class="btn btn-outline-dark tag">Healthy</button>
+        </div>
     </div>
 
     <div class="mb-3">
@@ -85,7 +85,24 @@ function updateStars() {
   });
 }
 </script>
+<script>
+var tags = document.querySelectorAll(".tag");
 
+tags.forEach(function(tag) {
+  tag.addEventListener("click", function() {
+
+    // Toggle visual state
+    if (tag.classList.contains("btn-outline-dark")) {
+      tag.classList.remove("btn-outline-dark");
+      tag.classList.add("btn-dark");
+    } else {
+      tag.classList.remove("btn-dark");
+      tag.classList.add("btn-outline-dark");
+    }
+
+  });
+});
+</script>
 
 </body>
 </html>
