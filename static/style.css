@@ -388,3 +388,17 @@ label {
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
+
+.review-card .form-control,
+.review-card .form-select {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  transition: all 0.2s ease;
+}
+
+.review-card .form-control:focus,
+.review-card .form-select:focus {
+  border-color: #f78c6b;
+  box-shadow: 0 0 0 2px rgba(247, 140, 107, 0.2);
+}
