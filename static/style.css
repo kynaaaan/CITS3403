@@ -377,3 +377,14 @@ label {
 .restaurant-card:hover {
     border-left: 3px solid #ff7e5f !important;
 }
+/* ── 14. Write_review page ───────────────────────────── */
+.review-page {
+  background: linear-gradient(135deg, #f78c6b, #f3a469);
+}
+
+.review-card {
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
