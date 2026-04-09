@@ -402,3 +402,26 @@ label {
   border-color: #f78c6b;
   box-shadow: 0 0 0 2px rgba(247, 140, 107, 0.2);
 }
+
+
+body {
+  font-family: 'DM Sans', sans-serif;
+}
+
+
+.review-card h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+
+.review-card .form-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.review-card .form-control,
+.review-card .form-select {
+  font-size: 0.95rem;
+}
