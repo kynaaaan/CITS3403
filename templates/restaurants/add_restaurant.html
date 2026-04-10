@@ -23,13 +23,14 @@
       <!-- Restaurant Name -->
       <div class="mb-3">
         <label class="form-label">Restaurant Name</label>
-        <input type="text" class="form-control" placeholder="Enter restaurant name">
-      </div>
+        <input type="text" id="restaurantName" class="form-control" placeholder="Enter restaurant name">
+        <div class="text-danger small" id="nameError"></div>
+    </div>
 
       <!-- Suburb -->
       <div class="mb-3">
         <label class="form-label">Suburb</label>
-        <select class="form-select">
+        <select id="suburb" class="form-select">
           <option value="">Select a suburb</option>
           <option>Perth CBD</option>
           <option>Subiaco</option>
@@ -37,12 +38,14 @@
           <option>Victoria Park</option>
           <option>Northbridge</option>
         </select>
+        <div class="text-danger small" id="nameError"></div>
       </div>
 
       <!-- Cuisine Tags -->
       <div class="mb-3">
         <label class="form-label">Cuisine Tags</label>
-        <div class="d-flex flex-wrap gap-2">
+        <div id="cuisineTags" class="d-flex flex-wrap gap-2">
+
           <div class="form-check">
             <input class="form-check-input" type="checkbox" id="italian">
             <label class="form-check-label" for="italian">Italian</label>
@@ -68,6 +71,7 @@
             <label class="form-check-label" for="mexican">Mexican</label>
           </div>
         </div>
+        <div class="text-danger small" id="cuisineError"></div>
       </div>
 
       <!-- Price Range -->
