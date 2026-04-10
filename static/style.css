@@ -377,3 +377,56 @@ label {
 .restaurant-card:hover {
     border-left: 3px solid #ff7e5f !important;
 }
+/* ── 14. LEADERBOARD STYLING (Leaderboard.html) ──────────────────────────────────────── */
+
+.leaderboard-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 1.5rem;
+}
+
+/* Medal Colors for Rankings */
+.rank-1 { color: #FFD700 !important; font-weight: bold; } /* Gold */
+.rank-2 { color: #C0C0C0 !important; font-weight: bold; } /* Silver */
+.rank-3 { color: #CD7F32 !important; font-weight: bold; } /* Bronze */
+
+/* Custom XP Progress Bars for the leaderboard list */
+.xp-progress-wrapper {
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.xp-progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+/* Row Hover Effects */
+.leaderboard-row {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.leaderboard-row:hover {
+    background-color: rgba(255, 126, 95, 0.05);
+    transform: translateX(5px);
+}
+
+/* Chart Container Fix - prevents the chart from collapsing to 0px */
+.chart-wrapper {
+    min-height: 300px;
+    position: relative;
+    padding: 1rem;
+    width: 100%;
+}
+
+/* Ensure canvas takes up its full container */
+#xpChart {
+    width: 100% !important;
+    height: 100% !important;
+}

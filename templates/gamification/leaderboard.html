@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Weekly Leaderboard — RateFoodPerth{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+  <div class="container py-5">
+    <h1 class="hero-headline mb-2">
+      Weekly Leaderboard<span class="logo-dot">.</span>
+    </h1>
+    <p class="hero-subtext mb-0">
+      Celebrating Perth's top foodies, dishes, and local explorers.
+    </p>
+  </div>
+</section>
+
+<div class="feed-wrapper">
+    <div class="container py-4">
+        <div class="card shadow-sm border-0 p-4 rounded-4">
+            
+            <ul class="nav nav-pills nav-justified mb-4" id="leaderboardTabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active fw-bold" data-bs-toggle="pill" data-bs-target="#reviewers">Top Reviewers</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#dishes">Top Dishes</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#explorers">Top Explorers</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="reviewers">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 mb-4">
+                            <div class="p-3 border rounded-4 bg-white" style="height: 320px;">
+                                <canvas id="xpChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr class="text-muted small text-uppercase">
+                                        <th>Rank</th>
+                                        <th>User</th>
+                                        <th class="text-end">XP Gained</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="leaderboard-row">
+                                        <td class="rank-1"><i class="fas fa-crown text-warning"></i> 1</td>
+                                        <td>
+                                            <strong>@PerthFoodie</strong>
+                                            <div class="xp-bar-container">
+                                                <div class="xp-bar-fill" style="width: 90%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-end fw-bold">1,250</td>
+                                    </tr>
+                                    <tr class="leaderboard-row">
+                                        <td class="rank-2">2</td>
+                                        <td>
+                                            <strong>@SushiMaster</strong>
+                                            <div class="xp-bar-container">
+                                                <div class="xp-bar-fill" style="width: 75%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-end fw-bold">1,100</td>
+                                    </tr>
+                                    <tr class="leaderboard-row">
+                                        <td class="rank-3">3</td>
+                                        <td>
+                                            <strong>@BurgerQueen</strong>
+                                            <div class="xp-bar-container">
+                                                <div class="xp-bar-fill" style="width: 60%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-end fw-bold">950</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="dishes">
+                    <div class="p-5 text-center">
+                        <i class="fas fa-utensils fa-3x text-muted mb-3 opacity-50"></i>
+                        <h6 class="text-muted">Trending dishes coming soon!</h6>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="explorers">
+                    <div class="p-5 text-center">
+                        <i class="fas fa-map-marked-alt fa-3x text-muted mb-3 opacity-50"></i>
+                        <h6 class="text-muted">Explorer rankings are being calculated...</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="/static/js/leaderboard.js"></script>
+{% endblock %}
