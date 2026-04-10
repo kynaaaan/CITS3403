@@ -377,7 +377,56 @@ label {
 .restaurant-card:hover {
     border-left: 3px solid #ff7e5f !important;
 }
-/* ── 14. LEADERBOARD STYLING (leaderboard.html) ──────────────────────────────────────── */
+
+/* ── 14. Write_review page ───────────────────────────── */
+.review-page {
+  background: linear-gradient(135deg, #f78c6b, #f3a469);
+}
+
+.review-card {
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.review-card .form-control,
+.review-card .form-select {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  transition: all 0.2s ease;
+}
+
+.review-card .form-control:focus,
+.review-card .form-select:focus {
+  border-color: #f78c6b;
+  box-shadow: 0 0 0 2px rgba(247, 140, 107, 0.2);
+}
+
+
+body {
+  font-family: 'DM Sans', sans-serif;
+}
+
+
+.review-card h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+
+.review-card .form-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.review-card .form-control,
+.review-card .form-select {
+  font-size: 0.95rem;
+  
+/* ── 15. LEADERBOARD STYLING (leaderboard.html) ──────────────────────────────────────── */
 
 .leaderboard-container {
     background: rgba(255, 255, 255, 0.95);
@@ -431,7 +480,7 @@ label {
     height: 100% !important;
 }
 
-/* ── 14. DASHBOARD STYLING (dashboard.html) ──────────────────────────────────────── */
+/* ── 16. DASHBOARD STYLING (dashboard.html) ──────────────────────────────────────── */
 
 /* Ensuring the feed sits nicely against the hero */
 .dashboard-wrapper {
