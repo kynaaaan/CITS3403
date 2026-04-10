@@ -377,7 +377,7 @@ label {
 .restaurant-card:hover {
     border-left: 3px solid #ff7e5f !important;
 }
-/* ── 14. LEADERBOARD STYLING (Leaderboard.html) ──────────────────────────────────────── */
+/* ── 14. LEADERBOARD STYLING (leaderboard.html) ──────────────────────────────────────── */
 
 .leaderboard-container {
     background: rgba(255, 255, 255, 0.95);
@@ -429,4 +429,45 @@ label {
 #xpChart {
     width: 100% !important;
     height: 100% !important;
+}
+
+/* ── 14. DASHBOARD STYLING (dashboard.html) ──────────────────────────────────────── */
+
+/* Ensuring the feed sits nicely against the hero */
+.dashboard-wrapper {
+    background-color: #fdfdfd;
+    padding-top: 2rem;
+    min-height: 80vh;
+}
+
+/* Customizing the notification badge transparency */
+.notification-pill {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white;
+}
+
+/* Styling the small progress bar specifically for the dashboard */
+.xp-progress-wrapper {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.xp-progress-fill {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    transition: width 0.8s ease-in-out;
+}
+
+/* Red streak alert specific to your dashboard design */
+.streak-alert {
+    background-color: #f8f9fa; /* Matches Bootstrap 'bg-light' */
+    border-left: 4px solid #dc3545; /* Matches Bootstrap 'border-danger' */
+}
+
+/* Badge container alignment */
+.badge-box .rounded-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
