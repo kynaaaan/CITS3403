@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Sakura Omakase — RateFoodPerth{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+  <!-- Restaurant Header -->
+  <div class="mb-4">
+    <h1>Sakura Omakase</h1>
+    <p class="text-muted">Northbridge, Perth WA</p>
+
+    <p>
+      <span class="badge bg-secondary">Japanese</span>
+      <span class="badge bg-secondary">Omakase</span>
+      <span class="badge bg-secondary">$$$$</span>
+    </p>
+
+    <p><strong>Rating:</strong> 4.7 / 5 (127 reviews)</p>
+
+    <a href="/write-review" class="btn btn-primary">
+      Write a Review
+    </a>
+  </div>
+
+  <div class="row">
+
+    <!-- Reviews Section -->
+    <div class="col-lg-8">
+      <h3>Reviews</h3>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5>Maya L.</h5>
+          <p>★★★★★</p>
+          <p>Amazing omakase experience. Fresh fish and great service.</p>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5>James R.</h5>
+          <p>★★★★★</p>
+          <p>Best sushi I have had in Perth. Highly recommend.</p>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5>Priya S.</h5>
+          <p>★★★★☆</p>
+          <p>Excellent food, but service was a little slow.</p>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5>Tom N.</h5>
+          <p>★★★★★</p>
+          <p>Perfect place for a special occasion.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <h4>Top Reviewers</h4>
+
+      <ul class="list-group">
+        <li class="list-group-item">James R. (9 reviews)</li>
+        <li class="list-group-item">Maya L. (6 reviews)</li>
+        <li class="list-group-item">Tom N. (4 reviews)</li>
+      </ul>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}
