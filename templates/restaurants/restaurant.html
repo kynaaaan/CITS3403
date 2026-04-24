@@ -28,7 +28,12 @@
         </h1>
 
         <p class="text-muted mb-2">
-          <i class="bi bi-geo-alt"></i> Northbridge, Perth WA
+         <a href="https://www.google.com/maps/search/?api=1&query=Sakura+Omakase+Northbridge+Perth"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-muted text-decoration-none">
+            <i class="bi bi-geo-alt"></i> Northbridge, Perth WA • View Map
+         </a>
         </p>
 
         <div class="mb-3">
@@ -115,20 +120,41 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="col-lg-4">
+<div class="col-lg-4">
 
-      <div class="review-card p-3">
-        <h4 class="mb-3">Top Reviewers</h4>
-        <small class="text-muted d-block mb-3">Most active users here</small>
+  <!-- Top Reviewers -->
+  <div class="review-card p-3">
+    <h4 class="mb-3">Top Reviewers</h4>
+    <small class="text-muted d-block mb-3">Most active users here</small>
 
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">James R. (9 reviews)</li>
-          <li class="list-group-item">Maya L. (6 reviews)</li>
-          <li class="list-group-item">Tom N. (4 reviews)</li>
-        </ul>
-      </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">James R. (9 reviews)</li>
+      <li class="list-group-item">Maya L. (6 reviews)</li>
+      <li class="list-group-item">Tom N. (4 reviews)</li>
+    </ul>
+  </div>
 
-    </div>
+  <!-- Location Map -->
+  <div class="review-card p-3 mt-4">
+    <h4 class="mb-3">Location</h4>
+
+    <iframe
+      src="https://www.google.com/maps?q=Northbridge+Perth+WA&output=embed"
+      width="100%"
+      height="220"
+      style="border:0; border-radius:14px;"
+      loading="lazy">
+    </iframe>
+
+    <a href="https://www.google.com/maps/search/?api=1&query=Sakura+Omakase+Northbridge+Perth"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="btn btn-sm btn-outline-dark w-100 mt-3">
+      Open in Maps
+    </a>
+  </div>
+
+</div>
 
   </div>
 
