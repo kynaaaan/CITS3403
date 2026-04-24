@@ -1,102 +1,126 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}Sakura Omakase — RateFoodPerth{% endblock %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sakura Omakase - RateFoodPerth</title>
 
-{% block content %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-<div class="container py-5">
+  <link rel="stylesheet" href="../../static/style.css">
+</head>
 
-  <!-- Restaurant Header -->
-  <div class="mb-5">
-    <h1>
-      Sakura Omakase
-      <span class="badge bg-success">Verified</span>
-    </h1>
+<body>
 
-    <p class="text-muted">Northbridge, Perth WA</p>
+<div class="container py-5" style="max-width: 900px;">
 
-    <p>
-      <span class="badge bg-secondary">Japanese</span>
-      <span class="badge bg-secondary">Omakase</span>
-      <span class="badge bg-secondary">Sushi</span>
-      <span class="badge bg-warning text-dark">$$$$</span>
-    </p>
+  <!-- Header -->
+  <div class="review-card p-4 mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
 
-    <p><strong>Average Rating:</strong> 4.7 ★ (127 reviews)</p>
+      <div>
+        <h1 class="mb-1">
+          Sakura Omakase
+          <span class="badge bg-success">Verified</span>
+        </h1>
 
-    <a href="/write-review" class="btn btn-primary px-4">
-      Write a Review
-    </a>
+        <p class="text-muted mb-2">
+          <i class="bi bi-geo-alt"></i> Northbridge, Perth WA
+        </p>
+
+        <div class="mb-3">
+          <span class="badge bg-secondary">Japanese</span>
+          <span class="badge bg-secondary">Omakase</span>
+          <span class="badge bg-secondary">Sushi</span>
+          <span class="badge bg-warning text-dark">$$$$</span>
+        </div>
+
+        <p class="mb-3"><strong>Average Rating:</strong> 4.7 ★ (127 reviews)</p>
+
+        <a href="/write-review" class="btn btn-primary">
+          Write a Review
+        </a>
+      </div>
+
+      <div class="text-center">
+        <h2 class="mb-0">4.7</h2>
+        <p class="mb-1">★★★★★</p>
+        <small class="text-muted">127 Reviews</small>
+      </div>
+
+    </div>
   </div>
 
   <div class="row g-4">
 
-    <!-- Reviews Section -->
+    <!-- Reviews -->
     <div class="col-lg-8">
+
       <h3 class="mb-3">Reviews</h3>
 
-      <div class="card mb-3">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <h5 class="mb-1">Maya L.</h5>
-            <small class="text-muted">12 Apr 2025</small>
-          </div>
-          <p class="mb-2">★★★★★</p>
-          <p class="mb-2">Amazing omakase experience. Fresh fish and great service.</p>
-          <button class="btn btn-sm btn-outline-secondary">Helpful</button>
+      <div class="review-card p-3 mb-3">
+        <div class="d-flex justify-content-between">
+          <h5 class="mb-1">Maya L.</h5>
+          <small class="text-muted">12 Apr 2025</small>
         </div>
+        <p class="mb-2">★★★★★</p>
+        <p class="mb-2">Amazing omakase experience. Fresh fish and great service.</p>
+        <button class="btn btn-sm btn-outline-dark">Helpful</button>
       </div>
 
-      <div class="card mb-3">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <h5 class="mb-1">James R.</h5>
-            <small class="text-muted">28 Mar 2025</small>
-          </div>
-          <p class="mb-2">★★★★★</p>
-          <p class="mb-2">Best sushi I have had in Perth. Highly recommend.</p>
-          <button class="btn btn-sm btn-outline-secondary">Helpful</button>
+      <div class="review-card p-3 mb-3">
+        <div class="d-flex justify-content-between">
+          <h5 class="mb-1">James R.</h5>
+          <small class="text-muted">28 Mar 2025</small>
         </div>
+        <p class="mb-2">★★★★★</p>
+        <p class="mb-2">Best sushi I have had in Perth. Highly recommend.</p>
+        <button class="btn btn-sm btn-outline-dark">Helpful</button>
       </div>
 
-      <div class="card mb-3">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <h5 class="mb-1">Priya S.</h5>
-            <small class="text-muted">5 Mar 2025</small>
-          </div>
-          <p class="mb-2">★★★★☆</p>
-          <p class="mb-2">Excellent food, but service was a little slow.</p>
-          <button class="btn btn-sm btn-outline-secondary">Helpful</button>
+      <div class="review-card p-3 mb-3">
+        <div class="d-flex justify-content-between">
+          <h5 class="mb-1">Priya S.</h5>
+          <small class="text-muted">5 Mar 2025</small>
         </div>
+        <p class="mb-2">★★★★☆</p>
+        <p class="mb-2">Excellent food, but service was a little slow.</p>
+        <button class="btn btn-sm btn-outline-dark">Helpful</button>
       </div>
 
-      <div class="card mb-3">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <h5 class="mb-1">Tom N.</h5>
-            <small class="text-muted">14 Feb 2025</small>
-          </div>
-          <p class="mb-2">★★★★★</p>
-          <p class="mb-2">Perfect place for a special occasion.</p>
-          <button class="btn btn-sm btn-outline-secondary">Helpful</button>
+      <div class="review-card p-3 mb-3">
+        <div class="d-flex justify-content-between">
+          <h5 class="mb-1">Tom N.</h5>
+          <small class="text-muted">14 Feb 2025</small>
         </div>
+        <p class="mb-2">★★★★★</p>
+        <p class="mb-2">Perfect place for a special occasion.</p>
+        <button class="btn btn-sm btn-outline-dark">Helpful</button>
       </div>
+
     </div>
 
     <!-- Sidebar -->
     <div class="col-lg-4">
-      <h4>Top Reviewers</h4>
 
-      <ul class="list-group">
-        <li class="list-group-item">James R. (9 reviews)</li>
-        <li class="list-group-item">Maya L. (6 reviews)</li>
-        <li class="list-group-item">Tom N. (4 reviews)</li>
-      </ul>
+      <div class="review-card p-3">
+        <h4 class="mb-3">Top Reviewers</h4>
+
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">James R. (9 reviews)</li>
+          <li class="list-group-item">Maya L. (6 reviews)</li>
+          <li class="list-group-item">Tom N. (4 reviews)</li>
+        </ul>
+      </div>
+
     </div>
 
   </div>
 
 </div>
 
-{% endblock %}
+</body>
+</html>
