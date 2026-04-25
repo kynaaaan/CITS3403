@@ -1,105 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Add Restaurant</title>
+{% extends "base.html" %}
 
-  <!-- Bootstrap -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+{% block title %}Add a Restaurant — RateFoodPerth{% endblock %}
 
-  <!-- Your CSS -->
-  <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body class="restaurant-page">
-
+{% block content %}
 <div class="container py-5" style="max-width: 700px;">
-  <div class="restaurant-card">
 
-    <h1 class="mb-4 text-center">Add a Restaurant</h1>
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
 
-    <form id="restaurantForm">
+            <h1 class="mb-1">
+                Add a restaurant<span class="logo-dot">.</span>
+            </h1>
+            <p class="text-muted mb-4">
+                Can't find a restaurant on RateFoodPerth? Add it here so you (and others) can review it.
+            </p>
 
-      <!-- Restaurant Name -->
-      <div class="mb-3">
-        <label class="form-label">Restaurant Name</label>
-        <input type="text" id="restaurantName" class="form-control" placeholder="Enter restaurant name">
-        <div class="text-danger small" id="nameError"></div>
+            <!-- Phase 3 will add {{ form.csrf_token }} below this comment -->
+            <form action="/restaurant/add" method="POST">
+
+                <!-- Restaurant name -->
+                <div class="mb-3">
+                    <label for="restaurantName" class="form-label">Restaurant name</label>
+                    <input type="text" name="name" id="restaurantName"
+                           class="form-control" placeholder="e.g. Lalla Rookh" required>
+                </div>
+
+                <!-- Suburb (values match locked slug list) -->
+                <div class="mb-3">
+                    <label for="suburbSelect" class="form-label">Suburb</label>
+                    <select name="suburb" id="suburbSelect" class="form-select" required>
+                        <option value="">Select a suburb</option>
+                        <option value="cbd">CBD</option>
+                        <option value="northbridge">Northbridge</option>
+                        <option value="fremantle">Fremantle</option>
+                        <option value="subiaco">Subiaco</option>
+                        <option value="leederville">Leederville</option>
+                        <option value="cottesloe">Cottesloe</option>
+                    </select>
+                </div>
+
+                <!-- Cuisine tags (multi-select via checkboxes; values match locked slug list) -->
+                <div class="mb-3">
+                    <label class="form-label d-block">Cuisine tags</label>
+                    <div class="d-flex flex-wrap gap-3">
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="cuisine_tags[]" value="modern-australian"
+                                   id="cuisine-modern-australian">
+                            <label class="form-check-label" for="cuisine-modern-australian">Modern Australian</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="cuisine_tags[]" value="italian" id="cuisine-italian">
+                            <label class="form-check-label" for="cuisine-italian">Italian</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="cuisine_tags[]" value="japanese" id="cuisine-japanese">
+                            <label class="form-check-label" for="cuisine-japanese">Japanese</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="cuisine_tags[]" value="chinese" id="cuisine-chinese">
+                            <label class="form-check-label" for="cuisine-chinese">Chinese</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="cuisine_tags[]" value="thai" id="cuisine-thai">
+                            <label class="form-check-label" for="cuisine-thai">Thai</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="cuisine_tags[]" value="indian" id="cuisine-indian">
+                            <label class="form-check-label" for="cuisine-indian">Indian</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="cuisine_tags[]" value="cafe" id="cuisine-cafe">
+                            <label class="form-check-label" for="cuisine-cafe">Cafe</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="cuisine_tags[]" value="seafood" id="cuisine-seafood">
+                            <label class="form-check-label" for="cuisine-seafood">Seafood</label>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Price range (values are integer strings 1/2/3) -->
+                <div class="mb-4">
+                    <label class="form-label d-block">Price range</label>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio"
+                               name="price_range" value="1" id="price1" required>
+                        <label class="form-check-label" for="price1">$ — Budget</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio"
+                               name="price_range" value="2" id="price2">
+                        <label class="form-check-label" for="price2">$$ — Mid-range</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio"
+                               name="price_range" value="3" id="price3">
+                        <label class="form-check-label" for="price3">$$$ — Upscale</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                    Add restaurant
+                </button>
+
+            </form>
+
+        </div>
     </div>
 
-      <!-- Suburb -->
-      <div class="mb-3">
-        <label class="form-label">Suburb</label>
-        <select id="suburb" class="form-select">
-          <option value="">Select a suburb</option>
-          <option>Perth CBD</option>
-          <option>Subiaco</option>
-          <option>Fremantle</option>
-          <option>Victoria Park</option>
-          <option>Northbridge</option>
-        </select>
-        <div class="text-danger small" id="nameError"></div>
-      </div>
-
-      <!-- Cuisine Tags -->
-      <div class="mb-3">
-        <label class="form-label">Cuisine Tags</label>
-        <div id="cuisineTags" class="d-flex flex-wrap gap-2">
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="italian">
-            <label class="form-check-label" for="italian">Italian</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="japanese">
-            <label class="form-check-label" for="japanese">Japanese</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="thai">
-            <label class="form-check-label" for="thai">Thai</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="indian">
-            <label class="form-check-label" for="indian">Indian</label>
-          </div>
-
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="mexican">
-            <label class="form-check-label" for="mexican">Mexican</label>
-          </div>
-        </div>
-        <div class="text-danger small" id="cuisineError"></div>
-      </div>
-
-      <!-- Price Range -->
-      <div class="mb-3">
-        <label class="form-label">Price Range</label>
-
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="price" id="price1">
-          <label class="form-check-label" for="price1">$</label>
-        </div>
-
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="price" id="price2">
-          <label class="form-check-label" for="price2">$$</label>
-        </div>
-
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="price" id="price3">
-          <label class="form-check-label" for="price3">$$$</label>
-        </div>
-      </div>
-
-      <button class="btn btn-primary w-100">Add Restaurant</button>
-
-    </form>
-
-  </div>
 </div>
-
-</body>
-</html>
+{% endblock %}

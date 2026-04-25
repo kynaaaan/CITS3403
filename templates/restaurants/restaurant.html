@@ -1,164 +1,408 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sakura Omakase - RateFoodPerth</title>
+{% block title %}Lalla Rookh — RateFoodPerth{% endblock %}
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+{% block content %}
 
-  <link rel="stylesheet" href="../../static/style.css">
-</head>
+<!--
+     RESTAURANT HEADER
+     Hero-style banner mirroring index.html and search.html for visual
+     consistency. Phase 3 will swap the hardcoded fields for
+     {{ restaurant.name }}, {{ restaurant.suburb }}, etc.
+-->
+<section class="hero-section">
+  <div class="container py-5">
+    <div class="row align-items-center g-4">
 
-<body>
-
-<div class="container py-5" style="max-width: 900px;">
-
-  <!-- Header -->
-  <div class="review-card p-4 mb-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
-
-      <div>
-        <h1 class="mb-1">
-          Sakura Omakase
-          <span class="badge bg-success">Verified</span>
+      <!-- Left: restaurant identity -->
+      <div class="col-lg-8">
+        <h1 class="hero-headline mb-2">
+          Lalla Rookh<span class="logo-dot">.</span>
         </h1>
 
-        <p class="text-muted mb-2">
-         <a href="https://www.google.com/maps/search/?api=1&query=Sakura+Omakase+Northbridge+Perth"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-muted text-decoration-none">
-            <i class="bi bi-geo-alt"></i> Northbridge, Perth WA • View Map
-         </a>
+        <p class="hero-subtext mb-3">
+          <i class="bi bi-geo-alt-fill me-1"></i>77 St Georges Tce, Perth CBD
         </p>
 
-        <div class="mb-3">
-          <span class="badge bg-secondary">Japanese</span>
-          <span class="badge bg-secondary">Omakase</span>
-          <span class="badge bg-secondary">Sushi</span>
-          <span class="badge bg-warning text-dark">$$$$</span>
+        <!-- Cuisine tags + price range -->
+        <div class="mb-3 d-flex flex-wrap gap-2">
+          <span class="badge rounded-pill bg-light text-dark px-3 py-2">Modern Australian</span>
+          <span class="badge rounded-pill bg-light text-dark px-3 py-2">Italian</span>
+          <span class="badge rounded-pill bg-dark text-light px-3 py-2">$$$</span>
         </div>
 
-        <p class="mb-3"><strong>Average Rating:</strong> 4.7 ★ (127 reviews)</p>
+        <!-- Average rating + review count -->
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <span class="text-warning fs-5">
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+          </span>
+          <span class="text-white fw-semibold fs-5">4.8</span>
+          <span class="text-white-50">· 42 reviews</span>
+        </div>
+      </div>
 
-        <a href="/write-review" class="btn btn-primary">
-          Write a Review
+      <!-- Right: write-a-review CTA -->
+      <div class="col-lg-4 text-lg-end">
+        <a href="/reviews/write?restaurant=1"
+           class="btn btn-light px-4 py-2 fw-semibold">
+          <i class="bi bi-pencil-square me-1"></i>Write a review
         </a>
       </div>
 
-      <div class="text-center">
-        <h2 class="mb-0">4.7</h2>
-        <p class="mb-1">★★★★★</p>
-        <small class="text-muted">127 Reviews</small>
-      </div>
-
     </div>
   </div>
+</section>
 
-  <div class="row g-4">
 
-    <!-- Reviews -->
-    <div class="col-lg-8">
+<!--
+     REVIEWS SECTION
+     All reviews for this restaurant, listed most-recent first.
+     Cards reuse the .review-card markup from index.html so feed.js's
+     like-button handler works identically here.
+-->
+<div class="feed-wrapper">
+  <div class="container py-4">
+    <div class="row g-4">
 
-      <h3 class="mb-3">
-        Reviews
-        <span class="badge bg-dark">5</span>
-      </h3>
+      <!-- ── REVIEWS COLUMN ─────────────────────────────────────────── -->
+      <div class="col-lg-8">
 
-      <div class="review-card p-3 mb-3">
-        <div class="d-flex justify-content-between">
-          <h5 class="mb-1">Maya L.</h5>
-          <small class="text-muted">Perth</small>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="fw-bold mb-0">
+            <i class="bi bi-chat-quote me-2 text-primary"></i>Reviews
+          </h4>
+          <span class="text-muted small">42 total</span>
         </div>
-        <p class="mb-2">★★★★★</p>
-        <p class="mb-2">Amazing omakase experience. Fresh fish and great service.</p>
-        <button class="btn btn-sm btn-outline-dark">
-            <i class="bi bi-hand-thumbs-up"></i> Helpful
-        </button>
-      </div>
 
-      <div class="review-card p-3 mb-3">
-        <div class="d-flex justify-content-between">
-          <h5 class="mb-1">James R.</h5>
-          <small class="text-muted">Perth</small>
+
+        <!-- Review 1: PerthFoodie99 -->
+        <div class="card shadow-sm border-0 mb-4 review-card"
+             data-suburb="cbd" data-cuisine="modern-australian">
+          <div class="card-body p-4">
+
+            <div class="d-flex align-items-center mb-3">
+              <div class="avatar-circle me-3" style="background-color: #ff7e5f;">PF</div>
+              <div>
+                <a href="/profile/perthfoodie99"
+                   class="fw-semibold text-dark text-decoration-none reviewer-name">PerthFoodie99</a>
+                <div class="text-muted small">2 hours ago</div>
+              </div>
+            </div>
+
+            <div class="text-warning mb-2">
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <span class="text-muted ms-1 small">5.0</span>
+            </div>
+
+            <div class="mb-2">
+              <span class="badge rounded-pill bg-warning text-dark me-1">hearty</span>
+              <span class="badge rounded-pill bg-dark me-1">classy</span>
+            </div>
+
+            <p class="card-text text-muted small mb-3">
+              The slow-roasted lamb shoulder has been on my radar for ages and it absolutely delivered.
+              Perfectly tender with a rich jus, paired beautifully with an excellent WA Shiraz from the
+              cellar list. If you haven't visited Lalla Rookh, you're missing the best of Perth's CBD
+              dining scene.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="accuracy" aria-label="Like this review for accuracy">
+                <i class="bi bi-check-circle me-1"></i>Accuracy
+                <span class="like-count">14</span>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="writing" aria-label="Like this review for writing quality">
+                <i class="bi bi-pencil me-1"></i>Writing
+                <span class="like-count">9</span>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="breadth" aria-label="Like this review for breadth of detail">
+                <i class="bi bi-compass me-1"></i>Breadth
+                <span class="like-count">6</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <p class="mb-2">★★★★★</p>
-        <p class="mb-2">Best sushi I have had in Perth. Highly recommend.</p>
-        <button class="btn btn-sm btn-outline-dark">
-            <i class="bi bi-hand-thumbs-up"></i> Helpful
-        </button>
-      </div>
 
-      <div class="review-card p-3 mb-3">
-        <div class="d-flex justify-content-between">
-          <h5 class="mb-1">Priya S.</h5>
-          <small class="text-muted">Perth</small>
+
+        <!-- Review 2: TasteExplorer -->
+        <div class="card shadow-sm border-0 mb-4 review-card"
+             data-suburb="cbd" data-cuisine="modern-australian">
+          <div class="card-body p-4">
+
+            <div class="d-flex align-items-center mb-3">
+              <div class="avatar-circle me-3" style="background-color: #0d6efd;">TE</div>
+              <div>
+                <a href="/profile/tasteexplorer"
+                   class="fw-semibold text-dark text-decoration-none reviewer-name">TasteExplorer</a>
+                <div class="text-muted small">1 day ago</div>
+              </div>
+            </div>
+
+            <div class="text-warning mb-2">
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-half"></i>
+              <span class="text-muted ms-1 small">4.5</span>
+            </div>
+
+            <div class="mb-2">
+              <span class="badge rounded-pill bg-warning text-dark me-1">wine</span>
+              <span class="badge rounded-pill bg-dark me-1">date-night</span>
+            </div>
+
+            <p class="card-text text-muted small mb-3">
+              Atmosphere is impeccable — warm lighting, exposed brick, that kind of place where
+              everything just feels considered. We shared the burrata and the pappardelle with oxtail
+              ragu. The pasta was the standout. My only gripe: service ran slow at peak hour, so book
+              early if you're in a rush.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="accuracy" aria-label="Like this review for accuracy">
+                <i class="bi bi-check-circle me-1"></i>Accuracy
+                <span class="like-count">22</span>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="writing" aria-label="Like this review for writing quality">
+                <i class="bi bi-pencil me-1"></i>Writing
+                <span class="like-count">18</span>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="breadth" aria-label="Like this review for breadth of detail">
+                <i class="bi bi-compass me-1"></i>Breadth
+                <span class="like-count">11</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <p class="mb-2">★★★★☆</p>
-        <p class="mb-2">Excellent food, but service was a little slow.</p>
-        <button class="btn btn-sm btn-outline-dark">
-            <i class="bi bi-hand-thumbs-up"></i> Helpful
-        </button>
-      </div>
 
-      <div class="review-card p-3 mb-3">
-        <div class="d-flex justify-content-between">
-          <h5 class="mb-1">Tom N.</h5>
-          <small class="text-muted">Perth</small>
+
+        <!-- Review 3: noodlequeen_ -->
+        <div class="card shadow-sm border-0 mb-4 review-card"
+             data-suburb="cbd" data-cuisine="modern-australian">
+          <div class="card-body p-4">
+
+            <div class="d-flex align-items-center mb-3">
+              <div class="avatar-circle me-3" style="background-color: #20c997;">NQ</div>
+              <div>
+                <a href="/profile/noodlequeen_"
+                   class="fw-semibold text-dark text-decoration-none reviewer-name">noodlequeen_</a>
+                <div class="text-muted small">3 days ago</div>
+              </div>
+            </div>
+
+            <div class="text-warning mb-2">
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <span class="text-muted ms-1 small">5.0</span>
+            </div>
+
+            <div class="mb-2">
+              <span class="badge rounded-pill bg-warning text-dark me-1">indulgent</span>
+              <span class="badge rounded-pill bg-danger me-1">spicy</span>
+            </div>
+
+            <p class="card-text text-muted small mb-3">
+              The nduja rigatoni is genuinely one of the best pasta dishes I've had in Perth. Rich,
+              spicy, just the right amount of char on the sausage. Finished with the tiramisu — classic,
+              boozy, no surprises, just done really well. I'll be back.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="accuracy" aria-label="Like this review for accuracy">
+                <i class="bi bi-check-circle me-1"></i>Accuracy
+                <span class="like-count">8</span>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="writing" aria-label="Like this review for writing quality">
+                <i class="bi bi-pencil me-1"></i>Writing
+                <span class="like-count">12</span>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="breadth" aria-label="Like this review for breadth of detail">
+                <i class="bi bi-compass me-1"></i>Breadth
+                <span class="like-count">4</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <p class="mb-2">★★★★★</p>
-        <p class="mb-2">Perfect place for a special occasion.</p>
-        <button class="btn btn-sm btn-outline-dark">
-            <i class="bi bi-hand-thumbs-up"></i> Helpful
-        </button>
-      </div>
 
-    </div>
 
-    <!-- Sidebar -->
-<div class="col-lg-4">
+        <!-- Review 4: SuburbScout42 -->
+        <div class="card shadow-sm border-0 mb-4 review-card"
+             data-suburb="cbd" data-cuisine="modern-australian">
+          <div class="card-body p-4">
 
-  <!-- Top Reviewers -->
-  <div class="review-card p-3">
-    <h4 class="mb-3">Top Reviewers</h4>
-    <small class="text-muted d-block mb-3">Most active users here</small>
+            <div class="d-flex align-items-center mb-3">
+              <div class="avatar-circle me-3" style="background-color: #6f42c1;">SS</div>
+              <div>
+                <a href="/profile/suburbscout42"
+                   class="fw-semibold text-dark text-decoration-none reviewer-name">SuburbScout42</a>
+                <div class="text-muted small">1 week ago</div>
+              </div>
+            </div>
 
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">James R. (9 reviews)</li>
-      <li class="list-group-item">Maya L. (6 reviews)</li>
-      <li class="list-group-item">Tom N. (4 reviews)</li>
-    </ul>
-  </div>
+            <div class="text-warning mb-2">
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star"></i>
+              <span class="text-muted ms-1 small">4.0</span>
+            </div>
 
-  <!-- Location Map -->
-  <div class="review-card p-3 mt-4">
-    <h4 class="mb-3">Location</h4>
+            <div class="mb-2">
+              <span class="badge rounded-pill bg-dark me-1">classy</span>
+              <span class="badge rounded-pill bg-secondary me-1">pricey</span>
+            </div>
 
-    <iframe
-      src="https://www.google.com/maps?q=Northbridge+Perth+WA&output=embed"
-      width="100%"
-      height="220"
-      style="border:0; border-radius:14px;"
-      loading="lazy">
-    </iframe>
+            <p class="card-text text-muted small mb-3">
+              Good food, great wine list, but prices have crept up noticeably in the last year.
+              Mains now sitting at $40–50 territory. Still worth it for a special occasion but I
+              wouldn't make this a weeknight regular anymore.
+            </p>
 
-    <a href="https://www.google.com/maps/search/?api=1&query=Sakura+Omakase+Northbridge+Perth"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="btn btn-sm btn-outline-dark w-100 mt-3">
-      Open in Maps
-    </a>
-  </div>
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="accuracy" aria-label="Like this review for accuracy">
+                <i class="bi bi-check-circle me-1"></i>Accuracy
+                <span class="like-count">31</span>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="writing" aria-label="Like this review for writing quality">
+                <i class="bi bi-pencil me-1"></i>Writing
+                <span class="like-count">7</span>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary like-btn"
+                      data-type="breadth" aria-label="Like this review for breadth of detail">
+                <i class="bi bi-compass me-1"></i>Breadth
+                <span class="like-count">15</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-</div>
+      </div><!-- end .col-lg-8 -->
 
-  </div>
 
-</div>
+      <!-- ── SIDEBAR ────────────────────────────────────────────────── -->
+      <div class="col-lg-4">
 
-</body>
-</html>
+        <!-- Restaurant info card -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-info-circle text-primary me-2"></i>About
+            </h6>
+            <p class="text-muted small mb-3">
+              A Perth CBD classic pairing modern Australian cooking with a focused Italian wine list.
+              Housed in a restored heritage building on St Georges Terrace.
+            </p>
+            <ul class="list-unstyled mb-0 small">
+              <li class="mb-2">
+                <i class="bi bi-clock text-muted me-2"></i>Tue–Sat, 5pm–late
+              </li>
+              <li class="mb-2">
+                <i class="bi bi-telephone text-muted me-2"></i>(08) 9325 7077
+              </li>
+              <li>
+                <i class="bi bi-globe text-muted me-2"></i>lallarookh.com.au
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Rating breakdown -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-bar-chart text-primary me-2"></i>Rating breakdown
+            </h6>
+
+            <div class="d-flex align-items-center mb-2">
+              <span class="small text-muted me-2" style="width: 28px;">5★</span>
+              <div class="progress flex-grow-1" style="height: 6px;">
+                <div class="progress-bar bg-warning" style="width: 76%;"></div>
+              </div>
+              <span class="small text-muted ms-2">32</span>
+            </div>
+
+            <div class="d-flex align-items-center mb-2">
+              <span class="small text-muted me-2" style="width: 28px;">4★</span>
+              <div class="progress flex-grow-1" style="height: 6px;">
+                <div class="progress-bar bg-warning" style="width: 19%;"></div>
+              </div>
+              <span class="small text-muted ms-2">8</span>
+            </div>
+
+            <div class="d-flex align-items-center mb-2">
+              <span class="small text-muted me-2" style="width: 28px;">3★</span>
+              <div class="progress flex-grow-1" style="height: 6px;">
+                <div class="progress-bar bg-warning" style="width: 5%;"></div>
+              </div>
+              <span class="small text-muted ms-2">2</span>
+            </div>
+
+            <div class="d-flex align-items-center mb-2">
+              <span class="small text-muted me-2" style="width: 28px;">2★</span>
+              <div class="progress flex-grow-1" style="height: 6px;">
+                <div class="progress-bar bg-warning" style="width: 0%;"></div>
+              </div>
+              <span class="small text-muted ms-2">0</span>
+            </div>
+
+            <div class="d-flex align-items-center">
+              <span class="small text-muted me-2" style="width: 28px;">1★</span>
+              <div class="progress flex-grow-1" style="height: 6px;">
+                <div class="progress-bar bg-warning" style="width: 0%;"></div>
+              </div>
+              <span class="small text-muted ms-2">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Write review CTA (sidebar duplicate for visibility on scroll) -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body text-center py-4">
+            <i class="bi bi-pencil-square text-primary mb-2" style="font-size: 2rem;"></i>
+            <h6 class="fw-bold mb-1">Been here recently?</h6>
+            <p class="text-muted small mb-3">Share your experience with the community.</p>
+            <a href="/reviews/write?restaurant=1" class="btn btn-primary btn-sm px-4">
+              Write a review
+            </a>
+          </div>
+        </div>
+
+      </div><!-- end .col-lg-4 -->
+
+    </div><!-- end .row -->
+  </div><!-- end .container -->
+</div><!-- end .feed-wrapper -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<!-- jQuery — required for the like-button toggling behaviour -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<!-- Reuse feed.js for the like-button toggle logic (it already handles .like-btn) -->
+<script src="/static/js/feed.js"></script>
+{% endblock %}

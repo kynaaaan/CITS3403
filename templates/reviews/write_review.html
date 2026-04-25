@@ -1,111 +1,137 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Write a Review</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../static/style.css">
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}Write a Review — RateFoodPerth{% endblock %}
 
+{% block content %}
 <div class="container py-5" style="max-width: 700px;">
-    <div class="review-card">
-        <h1 class="mb-4">Write a Review</h1>
-        <form>
 
-            <div class="mb-3">
-            <label class="form-label">Restaurant</label>
-            <select class="form-select">
-                <option value="">Select a restaurant</option>
-                <option>Spice Hub</option>
-                <option>Sweet Tooth Cafe</option>
-                <option>Urban Bites</option>
-                <option>Healthy Greens</option>
-            </select>
-            </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
 
-            <div class="mb-3">
-                <label class="form-label">Rating</label>
-                <div id="stars" class="fs-3">
-                    <i class="bi bi-star" data-value="1"></i>
-                    <i class="bi bi-star" data-value="2"></i>
-                    <i class="bi bi-star" data-value="3"></i>
-                    <i class="bi bi-star" data-value="4"></i>
-                    <i class="bi bi-star" data-value="5"></i>
+            <h1 class="mb-1">
+                Write a review<span class="logo-dot">.</span>
+            </h1>
+            <p class="text-muted mb-4">
+                Share your experience with the Perth food community.
+            </p>
+
+            <!-- Phase 3 will add {{ form.csrf_token }} below this comment -->
+            <form action="/reviews/write" method="POST">
+
+                <!-- Restaurant select -->
+                <div class="mb-3">
+                    <label for="restaurantSelect" class="form-label">Restaurant</label>
+                    <select name="restaurant_id" id="restaurantSelect"
+                            class="form-select" required>
+                        <option value="">Select a restaurant</option>
+                        <option value="1">Lalla Rookh</option>
+                        <option value="2">Brika</option>
+                        <option value="3">Bread in Common</option>
+                        <option value="4">Rockpool Bar &amp; Grill</option>
+                        <option value="5">Fuku</option>
+                        <option value="6">Long Chim</option>
+                        <option value="7">Mary Street Bakery</option>
+                        <option value="8">Pleased to Meet You</option>
+                        <option value="9">Bib &amp; Tucker</option>
+                        <option value="10">Lucky Chan's</option>
+                    </select>
+                    <div class="form-text">
+                        Can't find it? <a href="/restaurant/add">Add a restaurant</a>.
+                    </div>
                 </div>
-            </div>
 
-            <div class="mb-3">
-            <label class="form-label">Review</label>
-            <textarea class="form-control" rows="4"></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Craving Tags</label>
-                <div id="tags" class="d-flex flex-wrap gap-2">
-                    <button type="button" class="btn btn-outline-dark tag">Spicy</button>
-                    <button type="button" class="btn btn-outline-dark tag">Sweet</button>
-                    <button type="button" class="btn btn-outline-dark tag">Cheap</button>
-                    <button type="button" class="btn btn-outline-dark tag">Hearty</button>
-                    <button type="button" class="btn btn-outline-dark tag">Healthy</button>
+                <!-- Star rating -->
+                <div class="mb-3">
+                    <label class="form-label">Rating</label>
+                    <div id="stars" class="fs-3" role="radiogroup" aria-label="Star rating">
+                        <i class="bi bi-star" data-value="1" role="radio" aria-label="1 star"></i>
+                        <i class="bi bi-star" data-value="2" role="radio" aria-label="2 stars"></i>
+                        <i class="bi bi-star" data-value="3" role="radio" aria-label="3 stars"></i>
+                        <i class="bi bi-star" data-value="4" role="radio" aria-label="4 stars"></i>
+                        <i class="bi bi-star" data-value="5" role="radio" aria-label="5 stars"></i>
+                    </div>
+                    <input type="hidden" name="star_rating" id="starRatingInput" required>
                 </div>
-            </div>
 
-            <div class="mb-3">
-            <label class="form-label">Price Paid ($)</label>
-            <input type="number" class="form-control" min="0">
-            </div>
+                <!-- Review body -->
+                <div class="mb-3">
+                    <label for="bodyInput" class="form-label">Review</label>
+                    <textarea name="body" id="bodyInput" class="form-control"
+                              rows="5" minlength="20" required
+                              placeholder="What did you eat? How was it?"></textarea>
+                </div>
 
-            <button class="btn btn-primary w-100">Submit Review</button>
+                <!-- Craving tags (Bootstrap btn-check pattern: native checkbox + styled label) -->
+                <div class="mb-3">
+                    <label class="form-label d-block">Craving tags</label>
+                    <div class="d-flex flex-wrap gap-2">
 
-        </form>
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="hearty" id="tag-hearty">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-hearty">Hearty</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="classy" id="tag-classy">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-classy">Classy</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="spicy" id="tag-spicy">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-spicy">Spicy</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="sweet" id="tag-sweet">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-sweet">Sweet</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="cheap" id="tag-cheap">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-cheap">Cheap</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="healthy" id="tag-healthy">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-healthy">Healthy</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="indulgent" id="tag-indulgent">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-indulgent">Indulgent</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="wine" id="tag-wine">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-wine">Wine</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="cocktails" id="tag-cocktails">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-cocktails">Cocktails</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="pricey" id="tag-pricey">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-pricey">Pricey</label>
+
+                        <input type="checkbox" class="btn-check" name="craving_tags[]"
+                               value="date-night" id="tag-date-night">
+                        <label class="btn btn-outline-dark btn-sm" for="tag-date-night">Date-night</label>
+
+                    </div>
+                </div>
+
+                <!-- Price paid -->
+                <div class="mb-4">
+                    <label for="pricePaidInput" class="form-label">Price paid ($, optional)</label>
+                    <input type="number" name="price_paid" id="pricePaidInput"
+                           class="form-control" min="0" step="0.01">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                    Submit review
+                </button>
+
+            </form>
+
+        </div>
     </div>
+
 </div>
-<script>
-var selectedRating = 0;
+{% endblock %}
 
-var stars = document.querySelectorAll("#stars i");
-
-stars.forEach(function(star) {
-  star.addEventListener("click", function() {
-    selectedRating = star.getAttribute("data-value");
-    updateStars();
-  });
-});
-
-function updateStars() {
-  stars.forEach(function(star) {
-    if (star.getAttribute("data-value") <= selectedRating) {
-      star.classList.remove("bi-star");
-      star.classList.add("bi-star-fill", "text-warning");
-    } else {
-      star.classList.add("bi-star");
-      star.classList.remove("bi-star-fill", "text-warning");
-    }
-  });
-}
-</script>
-<script>
-var tags = document.querySelectorAll(".tag");
-
-tags.forEach(function(tag) {
-  tag.addEventListener("click", function() {
-
-    // Toggle visual state
-    if (tag.classList.contains("btn-outline-dark")) {
-      tag.classList.remove("btn-outline-dark");
-      tag.classList.add("btn-dark");
-    } else {
-      tag.classList.remove("btn-dark");
-      tag.classList.add("btn-outline-dark");
-    }
-
-  });
-});
-</script>
-
-</body>
-</html>
+{% block scripts %}
+<script src="/static/js/review.js"></script>
+{% endblock %}

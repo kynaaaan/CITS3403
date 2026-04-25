@@ -35,8 +35,10 @@
     =====================================================================
     OUR CUSTOM CSS
     =====================================================================
+    Path: /static/style.css for now. Phase 3 will swap this to
+    {{ url_for('static', filename='style.css') }} once Flask serves the app.
   -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/static/style.css">
 
 </head>
 
