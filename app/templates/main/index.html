@@ -17,16 +17,12 @@
 <link rel="stylesheet" href="/static/style.css">
 
 
-<!--
+{#
      HERO SECTION
      Welcome banner explaining the site to logged out visitors.
-
-     TODO (Flask): Once Flask-Login is integrated, wrap this section in:
-       {% if not current_user.is_authenticated %}
-         ...hero content...
-       {% endif %}
-     so returning logged-in users go straight to the feed.
--->
+     TODO (Flask): once Flask-Login lands, gate this section on
+     `not current_user.is_authenticated` so returning users skip the hero.
+#}
 <section class="hero-section">
   <div class="container py-5">
     <div class="row align-items-center g-4">

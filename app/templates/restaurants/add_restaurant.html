@@ -15,7 +15,7 @@
                 Can't find a restaurant on RateFoodPerth? Add it here so you (and others) can review it.
             </p>
 
-            <!-- Phase 3 will add {{ form.csrf_token }} below this comment -->
+            {# Phase 3: CSRF token slot — Flask-WTF will render it inside this form. #}
             <form action="/restaurant/add" method="POST">
 
                 <!-- Restaurant name -->

@@ -5,17 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!--
-    =====================================================================
-    PAGE TITLE
-    =====================================================================
-    Each child page can override this title using a Jinja block.
-    If it doesn't, the fallback "RateFoodPerth" is used.
-
-    Child page usage:
-      {% block title %}Restaurant Name — RateFoodPerth{% endblock %}
-    =====================================================================
-  -->
+  {# Page title; child pages override the "title" block. Falls back to "RateFoodPerth". #}
   <title>{% block title %}RateFoodPerth{% endblock %}</title>
 
 
@@ -112,27 +102,12 @@
   </nav>
 
 
-  <!--
-    =====================================================================
-    MAIN CONTENT BLOCK
-    =====================================================================
-    This is the slot that each child page fills with its own content.
-
-    A child page uses it like this:
-
-      {% extends "base.html" %}
-
-      {% block content %}
-        <div class="container">
-          <h1>My Page</h1>
-          <p>My content goes here.</p>
-        </div>
-      {% endblock %}
-
-    Everything outside this block (navbar, footer, etc.) is inherited
-    automatically — you never have to repeat it.
-    =====================================================================
-  -->
+  {#
+    Main content slot. Child pages fill it with:
+        {% extends "base.html" %}
+        {% block content %} ... {% endblock %}
+    Everything outside this block (navbar, footer) is inherited automatically.
+  #}
   <main>
     {% block content %}{% endblock %}
   </main>

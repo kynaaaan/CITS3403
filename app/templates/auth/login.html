@@ -14,7 +14,7 @@
                 </h2>
                 <p class="text-muted mb-4">Log in to review your favorite Perth spots.</p>
 
-                <!-- Phase 3 will add {{ form.csrf_token }} below this comment -->
+                {# Phase 3: CSRF token slot — Flask-WTF will render it inside this form. #}
                 <form action="/login" method="POST">
                     <div class="form-floating mb-3 text-start">
                         <input type="email" name="email" class="form-control"
