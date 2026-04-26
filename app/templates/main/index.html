@@ -5,12 +5,7 @@
 
 {% block content %}
 
-{#
-     HERO SECTION
-     Welcome banner explaining the site to logged out visitors.
-     TODO (Flask): once Flask-Login lands, gate this section on
-     `not current_user.is_authenticated` so returning users skip the hero.
-#}
+{# Hero is shown to all visitors for now; gate on auth state once Flask-Login lands. #}
 <section class="hero-section">
   <div class="container py-5">
     <div class="row align-items-center g-4">

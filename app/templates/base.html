@@ -9,53 +9,30 @@
   <title>{% block title %}RateFoodPerth{% endblock %}</title>
 
 
-    <!--
-    =====================================================================
-    BOOTSTRAP CSS
-    =====================================================================
--->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <!--
-    =====================================================================
-    OUR CUSTOM CSS
-    =====================================================================
-    Path: /static/style.css for now. Phase 3 will swap this to
-    {{ url_for('static', filename='style.css') }} once Flask serves the app.
-  -->
-  <link rel="stylesheet" href="/static/style.css">
+  {# Custom site styles. #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
 <body>
 
   <!--
-    =====================================================================
     NAVBAR
-    =====================================================================
-    Bootstrap navbar classes explained:
-      navbar             — marks this as a Bootstrap navbar
-      navbar-expand-lg   — full navbar on large screens, hamburger on mobile
-      sticky-top         — stays visible when you scroll down
-    =====================================================================
   -->
   <nav class="navbar navbar-expand-lg sticky-top" id="main-navbar">
     <div class="container">
 
       <!-- ── LOGO ───────────────────────────────────────────────────── -->
-      <a class="navbar-brand" href="/">
+      <a class="navbar-brand" href="{{ url_for('main.index') }}">
         <span class="logo-text">RateFoodPerth</span><span class="logo-dot">.</span>
       </a>
 
-      <!--
-        HAMBURGER BUTTON
-        Only visible on mobile
-      -->
       <button class="navbar-toggler" type="button"
               data-bs-toggle="collapse"
               data-bs-target="#navbarContent"
@@ -65,37 +42,29 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- ── NAV LINKS (collapses into hamburger on mobile) ─────────── -->
+      <!-- ── NAV LINKS ─────────── -->
       <div class="collapse navbar-collapse" id="navbarContent">
 
         <!-- Left side: main navigation -->
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" href="/"><i class="bi bi-house"></i> Home</a>
+            <a class="nav-link" href="{{ url_for('main.index') }}"><i class="bi bi-house"></i> Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/search"><i class="bi bi-search"></i> Discover</a>
+            <a class="nav-link" href="{{ url_for('main.search') }}"><i class="bi bi-search"></i> Discover</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/leaderboard"><i class="bi bi-trophy"></i> Leaderboard</a>
+            <a class="nav-link" href="{{ url_for('gamification.leaderboard') }}"><i class="bi bi-trophy"></i> Leaderboard</a>
           </li>
         </ul>
 
-        <!--
-          Right side: will change depending on login state.
-
-          For now we show the logged-OUT state as a static placeholder.
-        -->
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-2">
-
-          <!-- LOGGED OUT: show these two buttons -->
           <li class="nav-item">
-            <a class="nav-link" href="/login">Log in</a>
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Log in</a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-primary btn-sm px-3" href="/register">Sign up</a>
+            <a class="btn btn-primary btn-sm px-3" href="{{ url_for('auth.register') }}">Sign up</a>
           </li>
-
         </ul>
       </div><!-- end #navbarContent -->
     </div><!-- end .container -->
@@ -113,11 +82,7 @@
   </main>
 
 
-  <!--
-    =====================================================================
-    FOOTER
-    =====================================================================
-  -->
+  <!-- FOOTER -->
   <footer class="site-footer">
     <div class="container py-4">
       <div class="row align-items-center">
@@ -133,10 +98,10 @@
         <!-- Centre: nav links -->
         <div class="col-md-4 mb-3 mb-md-0 text-md-center">
           <ul class="list-inline mb-0 footer-links">
-            <li class="list-inline-item"><a href="/">Home</a></li>
-            <li class="list-inline-item"><a href="/search">Discover</a></li>
-            <li class="list-inline-item"><a href="/leaderboard">Leaderboard</a></li>
-            <li class="list-inline-item"><a href="/register">Sign up</a></li>
+            <li class="list-inline-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+            <li class="list-inline-item"><a href="{{ url_for('main.search') }}">Discover</a></li>
+            <li class="list-inline-item"><a href="{{ url_for('gamification.leaderboard') }}">Leaderboard</a></li>
+            <li class="list-inline-item"><a href="{{ url_for('auth.register') }}">Sign up</a></li>
           </ul>
         </div>
 
@@ -150,20 +115,9 @@
   </footer>
 
 
-  <!--
-    =====================================================================
-    BOOTSTRAP JAVASCRIPT
-    =====================================================================
-  -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!--
-    =====================================================================
-    EXTRA SCRIPTS BLOCK
-    =====================================================================
-    Child pages that need their own JavaScript can inject it here.
-    =====================================================================
-  -->
+  {# Per-page scripts go here via {% block scripts %}. #}
   {% block scripts %}{% endblock %}
 
 </body>

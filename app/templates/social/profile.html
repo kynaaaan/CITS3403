@@ -7,7 +7,7 @@
 <div class="container py-5">
 
     {% if user_is_private %}
-    <!-- Private profile state — shown to non-followers when profile_is_public = False -->
+    <!-- Private profile state shown to non-followers when profile_is_public = False -->
     <div class="card shadow-lg border-0 p-5 text-center">
         <div class="mb-4">
             <i class="bi bi-lock-fill text-muted" style="font-size: 4rem;"></i>
@@ -59,13 +59,7 @@
         <!-- ── RIGHT COLUMN: XP bars, badges, recent reviews ───────────── -->
         <div class="col-lg-8">
 
-            {#
-                XP / level bars — one per dimension.
-                Level model: each level needs 100 XP, so:
-                    level = (xp // 100) + 1
-                    progress into current level = xp % 100   (0..99)
-                Final form lands with Issue #20 (XP & streak calculation).
-            #}
+            {# Placeholder XP curve: each level = 100 XP, progress = xp % 100. #}
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="fw-bold mb-4">Experience levels</h5>
 
@@ -91,12 +85,7 @@
                 {% endfor %}
             </div>
 
-            {#
-                Badges earned.
-                NOT yet driven by user data — Issue #8 (Badge model) and #21
-                (Badge awarding logic) will populate user.badges. For now the
-                same 6 are shown for every user, with the first 2 active.
-            #}
+            {# Badges are still hardcoded — no user.badges field yet. #}
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="fw-bold mb-4">Badges earned</h5>
                 <div class="row row-cols-3 row-cols-md-6 g-3 text-center">
@@ -150,7 +139,7 @@
                 </div>
             </div>
 
-            <!-- Recent reviews (this user's reviews, most-recent first) -->
+            <!-- Recent reviews -->
             <h5 class="fw-bold mb-3">Recent reviews</h5>
             {% if reviews %}
                 {% for review in reviews %}

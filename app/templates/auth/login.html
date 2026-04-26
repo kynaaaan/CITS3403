@@ -14,8 +14,8 @@
                 </h2>
                 <p class="text-muted mb-4">Log in to review your favorite Perth spots.</p>
 
-                {# Phase 3: CSRF token slot — Flask-WTF will render it inside this form. #}
-                <form action="/login" method="POST">
+                {# CSRF token will render here once Flask-WTF is wired in. #}
+                <form action="{{ url_for('auth.login') }}" method="POST">
                     <div class="form-floating mb-3 text-start">
                         <input type="email" name="email" class="form-control"
                                id="emailInput" placeholder="name@example.com" required>
@@ -43,7 +43,7 @@
 
                 <hr class="my-4">
 
-                <p class="mb-0">New to RateFoodPerth? <a href="/register" class="text-decoration-none fw-bold">Sign up</a></p>
+                <p class="mb-0">New to RateFoodPerth? <a href="{{ url_for('auth.register') }}" class="text-decoration-none fw-bold">Sign up</a></p>
             </div>
         </div>
         
@@ -53,5 +53,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/login_utils.js"></script>
+<script src="{{ url_for('static', filename='js/login_utils.js') }}"></script>
 {% endblock %}

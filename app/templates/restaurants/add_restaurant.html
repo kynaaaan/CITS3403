@@ -15,108 +15,50 @@
                 Can't find a restaurant on RateFoodPerth? Add it here so you (and others) can review it.
             </p>
 
-            {# Phase 3: CSRF token slot — Flask-WTF will render it inside this form. #}
-            <form action="/restaurant/add" method="POST">
+            {# CSRF token will render here once Flask-WTF is wired in. #}
+            <form action="{{ url_for('restaurants.add') }}" method="POST">
 
-                <!-- Restaurant name -->
                 <div class="mb-3">
                     <label for="restaurantName" class="form-label">Restaurant name</label>
                     <input type="text" name="name" id="restaurantName"
                            class="form-control" placeholder="e.g. Lalla Rookh" required>
                 </div>
 
-                <!-- Suburb (values match locked slug list) -->
                 <div class="mb-3">
                     <label for="suburbSelect" class="form-label">Suburb</label>
                     <select name="suburb" id="suburbSelect" class="form-select" required>
                         <option value="">Select a suburb</option>
-                        <option value="cbd">CBD</option>
-                        <option value="northbridge">Northbridge</option>
-                        <option value="fremantle">Fremantle</option>
-                        <option value="subiaco">Subiaco</option>
-                        <option value="leederville">Leederville</option>
-                        <option value="cottesloe">Cottesloe</option>
+                        {% for slug, label in SUBURB_DISPLAY.items() %}
+                        <option value="{{ slug }}">{{ label }}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
-                <!-- Cuisine tags (multi-select via checkboxes; values match locked slug list) -->
                 <div class="mb-3">
                     <label class="form-label d-block">Cuisine tags</label>
                     <div class="d-flex flex-wrap gap-3">
-
+                        {% for slug, label in CUISINE_DISPLAY.items() %}
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox"
-                                   name="cuisine_tags[]" value="modern-australian"
-                                   id="cuisine-modern-australian">
-                            <label class="form-check-label" for="cuisine-modern-australian">Modern Australian</label>
+                                   name="cuisine_tags[]" value="{{ slug }}"
+                                   id="cuisine-{{ slug }}">
+                            <label class="form-check-label" for="cuisine-{{ slug }}">{{ label }}</label>
                         </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   name="cuisine_tags[]" value="italian" id="cuisine-italian">
-                            <label class="form-check-label" for="cuisine-italian">Italian</label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   name="cuisine_tags[]" value="japanese" id="cuisine-japanese">
-                            <label class="form-check-label" for="cuisine-japanese">Japanese</label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   name="cuisine_tags[]" value="chinese" id="cuisine-chinese">
-                            <label class="form-check-label" for="cuisine-chinese">Chinese</label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   name="cuisine_tags[]" value="thai" id="cuisine-thai">
-                            <label class="form-check-label" for="cuisine-thai">Thai</label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   name="cuisine_tags[]" value="indian" id="cuisine-indian">
-                            <label class="form-check-label" for="cuisine-indian">Indian</label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   name="cuisine_tags[]" value="cafe" id="cuisine-cafe">
-                            <label class="form-check-label" for="cuisine-cafe">Cafe</label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   name="cuisine_tags[]" value="seafood" id="cuisine-seafood">
-                            <label class="form-check-label" for="cuisine-seafood">Seafood</label>
-                        </div>
-
+                        {% endfor %}
                     </div>
                 </div>
 
-                <!-- Price range (values are integer strings 1/2/3) -->
                 <div class="mb-4">
                     <label class="form-label d-block">Price range</label>
-
+                    {% set price_descriptors = {1: "Budget", 2: "Mid-range", 3: "Upscale"} %}
+                    {% for tier, symbol in PRICE_DISPLAY.items() %}
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio"
-                               name="price_range" value="1" id="price1" required>
-                        <label class="form-check-label" for="price1">$ — Budget</label>
+                               name="price_range" value="{{ tier }}" id="price{{ tier }}"
+                               {% if loop.first %}required{% endif %}>
+                        <label class="form-check-label" for="price{{ tier }}">{{ symbol }} — {{ price_descriptors[tier] }}</label>
                     </div>
-
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio"
-                               name="price_range" value="2" id="price2">
-                        <label class="form-check-label" for="price2">$$ — Mid-range</label>
-                    </div>
-
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio"
-                               name="price_range" value="3" id="price3">
-                        <label class="form-check-label" for="price3">$$$ — Upscale</label>
-                    </div>
+                    {% endfor %}
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">

@@ -52,7 +52,7 @@
                                     <tr class="leaderboard-row">
                                         <td class="rank-1"><i class="bi bi-trophy-fill text-warning"></i> 1</td>
                                         <td>
-                                            <a href="/profile/tasteexplorer" class="fw-bold text-decoration-none text-dark">TasteExplorer</a>
+                                            <a href="{{ url_for('social.profile', username='tasteexplorer') }}" class="fw-bold text-decoration-none text-dark">TasteExplorer</a>
                                             <div class="xp-bar-container">
                                                 <div class="xp-bar-fill" style="width: 100%;"></div>
                                             </div>
@@ -62,7 +62,7 @@
                                     <tr class="leaderboard-row">
                                         <td class="rank-2">2</td>
                                         <td>
-                                            <a href="/profile/suburbscout42" class="fw-bold text-decoration-none text-dark">SuburbScout42</a>
+                                            <a href="{{ url_for('social.profile', username='suburbscout42') }}" class="fw-bold text-decoration-none text-dark">SuburbScout42</a>
                                             <div class="xp-bar-container">
                                                 <div class="xp-bar-fill" style="width: 79%;"></div>
                                             </div>
@@ -72,7 +72,7 @@
                                     <tr class="leaderboard-row">
                                         <td class="rank-3">3</td>
                                         <td>
-                                            <a href="/profile/noodlequeen_" class="fw-bold text-decoration-none text-dark">noodlequeen_</a>
+                                            <a href="{{ url_for('social.profile', username='noodlequeen_') }}" class="fw-bold text-decoration-none text-dark">noodlequeen_</a>
                                             <div class="xp-bar-container">
                                                 <div class="xp-bar-fill" style="width: 70%;"></div>
                                             </div>
@@ -82,7 +82,7 @@
                                     <tr class="leaderboard-row">
                                         <td>4</td>
                                         <td>
-                                            <a href="/profile/perthfoodie99" class="fw-bold text-decoration-none text-dark">PerthFoodie99</a>
+                                            <a href="{{ url_for('social.profile', username='perthfoodie99') }}" class="fw-bold text-decoration-none text-dark">PerthFoodie99</a>
                                             <div class="xp-bar-container">
                                                 <div class="xp-bar-fill" style="width: 61%;"></div>
                                             </div>
@@ -118,5 +118,5 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script src="/static/js/leaderboard.js"></script>
+    <script src="{{ url_for('static', filename='js/leaderboard.js') }}"></script>
 {% endblock %}

@@ -15,8 +15,8 @@
                 Share your experience with the Perth food community.
             </p>
 
-            {# Phase 3: CSRF token slot — Flask-WTF will render it inside this form. #}
-            <form action="/reviews/write" method="POST">
+            {# CSRF token will render here once Flask-WTF is wired in. #}
+            <form action="{{ url_for('reviews.write') }}" method="POST">
 
                 <!-- Restaurant select -->
                 <div class="mb-3">
@@ -36,7 +36,7 @@
                         <option value="10">Lucky Chan's</option>
                     </select>
                     <div class="form-text">
-                        Can't find it? <a href="/restaurant/add">Add a restaurant</a>.
+                        Can't find it? <a href="{{ url_for('restaurants.add') }}">Add a restaurant</a>.
                     </div>
                 </div>
 
@@ -61,7 +61,7 @@
                               placeholder="What did you eat? How was it?"></textarea>
                 </div>
 
-                <!-- Craving tags (Bootstrap btn-check pattern: native checkbox + styled label) -->
+                <!-- Craving tags -->
                 <div class="mb-3">
                     <label class="form-label d-block">Craving tags</label>
                     <div class="d-flex flex-wrap gap-2">
@@ -133,5 +133,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/review.js"></script>
+<script src="{{ url_for('static', filename='js/review.js') }}"></script>
 {% endblock %}
