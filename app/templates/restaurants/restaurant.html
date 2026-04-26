@@ -1,14 +1,14 @@
 {% extends "base.html" %}
+{% import "_macros.html" as macros %}
 
-{% block title %}Lalla Rookh — RateFoodPerth{% endblock %}
+{% block title %}{{ restaurant.name }} — RateFoodPerth{% endblock %}
 
 {% block content %}
 
 {#
      RESTAURANT HEADER
      Hero-style banner mirroring index.html and search.html for visual
-     consistency. Phase 3 will swap the hardcoded fields for
-     restaurant.name, restaurant.suburb, etc.
+     consistency.
 #}
 <section class="hero-section">
   <div class="container py-5">
@@ -17,37 +17,34 @@
       <!-- Left: restaurant identity -->
       <div class="col-lg-8">
         <h1 class="hero-headline mb-2">
-          Lalla Rookh<span class="logo-dot">.</span>
+          {{ restaurant.name }}<span class="logo-dot">.</span>
         </h1>
 
         <p class="hero-subtext mb-3">
-          <i class="bi bi-geo-alt-fill me-1"></i>77 St Georges Tce, Perth CBD
+          <i class="bi bi-geo-alt-fill me-1"></i>{{ SUBURB_DISPLAY[restaurant.suburb] }}
         </p>
 
         <!-- Cuisine tags + price range -->
         <div class="mb-3 d-flex flex-wrap gap-2">
-          <span class="badge rounded-pill bg-light text-dark px-3 py-2">Modern Australian</span>
-          <span class="badge rounded-pill bg-light text-dark px-3 py-2">Italian</span>
-          <span class="badge rounded-pill bg-dark text-light px-3 py-2">$$$</span>
+          {% for tag in restaurant.cuisine_tags %}
+          <span class="badge rounded-pill bg-light text-dark px-3 py-2">{{ CUISINE_DISPLAY[tag] }}</span>
+          {% endfor %}
+          <span class="badge rounded-pill bg-dark text-light px-3 py-2">{{ PRICE_DISPLAY[restaurant.price_range] }}</span>
         </div>
 
         <!-- Average rating + review count -->
         <div class="d-flex align-items-center gap-3 flex-wrap">
           <span class="text-warning fs-5">
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
+            {{ macros.stars(restaurant.avg_rating) }}
           </span>
-          <span class="text-white fw-semibold fs-5">4.8</span>
-          <span class="text-white-50">· 42 reviews</span>
+          <span class="text-white fw-semibold fs-5">{{ "%.1f"|format(restaurant.avg_rating) }}</span>
+          <span class="text-white-50">· {{ restaurant.review_count }} reviews</span>
         </div>
       </div>
 
       <!-- Right: write-a-review CTA -->
       <div class="col-lg-4 text-lg-end">
-        <a href="/reviews/write?restaurant=1"
+        <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
            class="btn btn-light px-4 py-2 fw-semibold">
           <i class="bi bi-pencil-square me-1"></i>Write a review
         </a>
@@ -58,12 +55,7 @@
 </section>
 
 
-<!--
-     REVIEWS SECTION
-     All reviews for this restaurant, listed most-recent first.
-     Cards reuse the .review-card markup from index.html so feed.js's
-     like-button handler works identically here.
--->
+<!-- REVIEWS SECTION -->
 <div class="feed-wrapper">
   <div class="container py-4">
     <div class="row g-4">
@@ -75,230 +67,71 @@
           <h4 class="fw-bold mb-0">
             <i class="bi bi-chat-quote me-2 text-primary"></i>Reviews
           </h4>
-          <span class="text-muted small">42 total</span>
+          <span class="text-muted small">{{ reviews|length }} shown</span>
         </div>
 
+        {% if reviews %}
+          {% for review in reviews %}
+          <div class="card shadow-sm border-0 mb-4 review-card"
+               data-suburb="{{ restaurant.suburb }}"
+               data-cuisine="{{ restaurant.cuisine_tags[0] }}">
+            <div class="card-body p-4">
 
-        <!-- Review 1: PerthFoodie99 -->
-        <div class="card shadow-sm border-0 mb-4 review-card"
-             data-suburb="cbd" data-cuisine="modern-australian">
-          <div class="card-body p-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="avatar-circle me-3"
+                     style="background-color: {{ review.user.avatar_color }};">{{ review.user.initials }}</div>
+                <div>
+                  <a href="{{ url_for('social.profile', username=review.user.username|lower) }}"
+                     class="fw-semibold text-dark text-decoration-none reviewer-name">{{ review.user.username }}</a>
+                  <div class="text-muted small">{{ review.created_at }}</div>
+                </div>
+              </div>
 
-            <div class="d-flex align-items-center mb-3">
-              <div class="avatar-circle me-3" style="background-color: #ff7e5f;">PF</div>
-              <div>
-                <a href="/profile/perthfoodie99"
-                   class="fw-semibold text-dark text-decoration-none reviewer-name">PerthFoodie99</a>
-                <div class="text-muted small">2 hours ago</div>
+              <div class="text-warning mb-2">
+                {{ macros.stars(review.star_rating) }}
+                <span class="text-muted ms-1 small">{{ "%.1f"|format(review.star_rating) }}</span>
+              </div>
+
+              {% if review.craving_tags %}
+              <div class="mb-2">
+                {% for tag in review.craving_tags %}
+                <span class="badge rounded-pill bg-warning text-dark me-1">{{ tag }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <p class="card-text text-muted small mb-3">{{ review.body }}</p>
+
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-secondary like-btn"
+                        data-type="accuracy" aria-label="Like this review for accuracy">
+                  <i class="bi bi-check-circle me-1"></i>Accuracy
+                  <span class="like-count">{{ review.likes.accuracy }}</span>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary like-btn"
+                        data-type="writing" aria-label="Like this review for writing quality">
+                  <i class="bi bi-pencil me-1"></i>Writing
+                  <span class="like-count">{{ review.likes.writing }}</span>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary like-btn"
+                        data-type="breadth" aria-label="Like this review for breadth of detail">
+                  <i class="bi bi-compass me-1"></i>Breadth
+                  <span class="like-count">{{ review.likes.breadth }}</span>
+                </button>
               </div>
             </div>
-
-            <div class="text-warning mb-2">
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <span class="text-muted ms-1 small">5.0</span>
-            </div>
-
-            <div class="mb-2">
-              <span class="badge rounded-pill bg-warning text-dark me-1">hearty</span>
-              <span class="badge rounded-pill bg-dark me-1">classy</span>
-            </div>
-
-            <p class="card-text text-muted small mb-3">
-              The slow-roasted lamb shoulder has been on my radar for ages and it absolutely delivered.
-              Perfectly tender with a rich jus, paired beautifully with an excellent WA Shiraz from the
-              cellar list. If you haven't visited Lalla Rookh, you're missing the best of Perth's CBD
-              dining scene.
-            </p>
-
-            <div class="d-flex flex-wrap gap-2">
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="accuracy" aria-label="Like this review for accuracy">
-                <i class="bi bi-check-circle me-1"></i>Accuracy
-                <span class="like-count">14</span>
-              </button>
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="writing" aria-label="Like this review for writing quality">
-                <i class="bi bi-pencil me-1"></i>Writing
-                <span class="like-count">9</span>
-              </button>
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="breadth" aria-label="Like this review for breadth of detail">
-                <i class="bi bi-compass me-1"></i>Breadth
-                <span class="like-count">6</span>
-              </button>
-            </div>
           </div>
-        </div>
-
-
-        <!-- Review 2: TasteExplorer -->
-        <div class="card shadow-sm border-0 mb-4 review-card"
-             data-suburb="cbd" data-cuisine="modern-australian">
-          <div class="card-body p-4">
-
-            <div class="d-flex align-items-center mb-3">
-              <div class="avatar-circle me-3" style="background-color: #0d6efd;">TE</div>
-              <div>
-                <a href="/profile/tasteexplorer"
-                   class="fw-semibold text-dark text-decoration-none reviewer-name">TasteExplorer</a>
-                <div class="text-muted small">1 day ago</div>
-              </div>
-            </div>
-
-            <div class="text-warning mb-2">
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-half"></i>
-              <span class="text-muted ms-1 small">4.5</span>
-            </div>
-
-            <div class="mb-2">
-              <span class="badge rounded-pill bg-warning text-dark me-1">wine</span>
-              <span class="badge rounded-pill bg-dark me-1">date-night</span>
-            </div>
-
-            <p class="card-text text-muted small mb-3">
-              Atmosphere is impeccable — warm lighting, exposed brick, that kind of place where
-              everything just feels considered. We shared the burrata and the pappardelle with oxtail
-              ragu. The pasta was the standout. My only gripe: service ran slow at peak hour, so book
-              early if you're in a rush.
-            </p>
-
-            <div class="d-flex flex-wrap gap-2">
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="accuracy" aria-label="Like this review for accuracy">
-                <i class="bi bi-check-circle me-1"></i>Accuracy
-                <span class="like-count">22</span>
-              </button>
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="writing" aria-label="Like this review for writing quality">
-                <i class="bi bi-pencil me-1"></i>Writing
-                <span class="like-count">18</span>
-              </button>
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="breadth" aria-label="Like this review for breadth of detail">
-                <i class="bi bi-compass me-1"></i>Breadth
-                <span class="like-count">11</span>
-              </button>
-            </div>
+          {% endfor %}
+        {% else %}
+          <!-- Empty state when no reviews exist for this restaurant yet -->
+          <div class="text-center py-5">
+            <i class="bi bi-chat-quote text-muted" style="font-size: 2.5rem;"></i>
+            <h6 class="mt-3 text-muted">No reviews yet</h6>
+            <p class="text-muted small">Be the first to review {{ restaurant.name }}.</p>
+            <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
+               class="btn btn-primary btn-sm">Write a review</a>
           </div>
-        </div>
-
-
-        <!-- Review 3: noodlequeen_ -->
-        <div class="card shadow-sm border-0 mb-4 review-card"
-             data-suburb="cbd" data-cuisine="modern-australian">
-          <div class="card-body p-4">
-
-            <div class="d-flex align-items-center mb-3">
-              <div class="avatar-circle me-3" style="background-color: #20c997;">NQ</div>
-              <div>
-                <a href="/profile/noodlequeen_"
-                   class="fw-semibold text-dark text-decoration-none reviewer-name">noodlequeen_</a>
-                <div class="text-muted small">3 days ago</div>
-              </div>
-            </div>
-
-            <div class="text-warning mb-2">
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <span class="text-muted ms-1 small">5.0</span>
-            </div>
-
-            <div class="mb-2">
-              <span class="badge rounded-pill bg-warning text-dark me-1">indulgent</span>
-              <span class="badge rounded-pill bg-danger me-1">spicy</span>
-            </div>
-
-            <p class="card-text text-muted small mb-3">
-              The nduja rigatoni is genuinely one of the best pasta dishes I've had in Perth. Rich,
-              spicy, just the right amount of char on the sausage. Finished with the tiramisu — classic,
-              boozy, no surprises, just done really well. I'll be back.
-            </p>
-
-            <div class="d-flex flex-wrap gap-2">
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="accuracy" aria-label="Like this review for accuracy">
-                <i class="bi bi-check-circle me-1"></i>Accuracy
-                <span class="like-count">8</span>
-              </button>
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="writing" aria-label="Like this review for writing quality">
-                <i class="bi bi-pencil me-1"></i>Writing
-                <span class="like-count">12</span>
-              </button>
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="breadth" aria-label="Like this review for breadth of detail">
-                <i class="bi bi-compass me-1"></i>Breadth
-                <span class="like-count">4</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-
-        <!-- Review 4: SuburbScout42 -->
-        <div class="card shadow-sm border-0 mb-4 review-card"
-             data-suburb="cbd" data-cuisine="modern-australian">
-          <div class="card-body p-4">
-
-            <div class="d-flex align-items-center mb-3">
-              <div class="avatar-circle me-3" style="background-color: #6f42c1;">SS</div>
-              <div>
-                <a href="/profile/suburbscout42"
-                   class="fw-semibold text-dark text-decoration-none reviewer-name">SuburbScout42</a>
-                <div class="text-muted small">1 week ago</div>
-              </div>
-            </div>
-
-            <div class="text-warning mb-2">
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star"></i>
-              <span class="text-muted ms-1 small">4.0</span>
-            </div>
-
-            <div class="mb-2">
-              <span class="badge rounded-pill bg-dark me-1">classy</span>
-              <span class="badge rounded-pill bg-secondary me-1">pricey</span>
-            </div>
-
-            <p class="card-text text-muted small mb-3">
-              Good food, great wine list, but prices have crept up noticeably in the last year.
-              Mains now sitting at $40–50 territory. Still worth it for a special occasion but I
-              wouldn't make this a weeknight regular anymore.
-            </p>
-
-            <div class="d-flex flex-wrap gap-2">
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="accuracy" aria-label="Like this review for accuracy">
-                <i class="bi bi-check-circle me-1"></i>Accuracy
-                <span class="like-count">31</span>
-              </button>
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="writing" aria-label="Like this review for writing quality">
-                <i class="bi bi-pencil me-1"></i>Writing
-                <span class="like-count">7</span>
-              </button>
-              <button class="btn btn-sm btn-outline-secondary like-btn"
-                      data-type="breadth" aria-label="Like this review for breadth of detail">
-                <i class="bi bi-compass me-1"></i>Breadth
-                <span class="like-count">15</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        {% endif %}
 
       </div><!-- end .col-lg-8 -->
 
@@ -306,76 +139,26 @@
       <!-- ── SIDEBAR ────────────────────────────────────────────────── -->
       <div class="col-lg-4">
 
-        <!-- Restaurant info card -->
-        <div class="card shadow-sm border-0 mb-4">
-          <div class="card-body">
-            <h6 class="fw-bold mb-3">
-              <i class="bi bi-info-circle text-primary me-2"></i>About
-            </h6>
-            <p class="text-muted small mb-3">
-              A Perth CBD classic pairing modern Australian cooking with a focused Italian wine list.
-              Housed in a restored heritage building on St Georges Terrace.
-            </p>
-            <ul class="list-unstyled mb-0 small">
-              <li class="mb-2">
-                <i class="bi bi-clock text-muted me-2"></i>Tue–Sat, 5pm–late
-              </li>
-              <li class="mb-2">
-                <i class="bi bi-telephone text-muted me-2"></i>(08) 9325 7077
-              </li>
-              <li>
-                <i class="bi bi-globe text-muted me-2"></i>lallarookh.com.au
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Rating breakdown -->
+        <!-- Rating breakdown (computed from reviews list) -->
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-body">
             <h6 class="fw-bold mb-3">
               <i class="bi bi-bar-chart text-primary me-2"></i>Rating breakdown
             </h6>
 
-            <div class="d-flex align-items-center mb-2">
-              <span class="small text-muted me-2" style="width: 28px;">5★</span>
-              <div class="progress flex-grow-1" style="height: 6px;">
-                <div class="progress-bar bg-warning" style="width: 76%;"></div>
+            {# Loop 5 -> 1 so 5-stars sits at the top of the list. #}
+            {% set total = reviews|length or 1 %}
+            {% for stars in [5, 4, 3, 2, 1] %}
+              {% set count = rating_distribution[stars - 1] %}
+              {% set pct = (count / total * 100)|round|int %}
+              <div class="d-flex align-items-center {{ 'mb-2' if not loop.last else '' }}">
+                <span class="small text-muted me-2" style="width: 28px;">{{ stars }}★</span>
+                <div class="progress flex-grow-1" style="height: 6px;">
+                  <div class="progress-bar bg-warning" style="width: {{ pct }}%;"></div>
+                </div>
+                <span class="small text-muted ms-2">{{ count }}</span>
               </div>
-              <span class="small text-muted ms-2">32</span>
-            </div>
-
-            <div class="d-flex align-items-center mb-2">
-              <span class="small text-muted me-2" style="width: 28px;">4★</span>
-              <div class="progress flex-grow-1" style="height: 6px;">
-                <div class="progress-bar bg-warning" style="width: 19%;"></div>
-              </div>
-              <span class="small text-muted ms-2">8</span>
-            </div>
-
-            <div class="d-flex align-items-center mb-2">
-              <span class="small text-muted me-2" style="width: 28px;">3★</span>
-              <div class="progress flex-grow-1" style="height: 6px;">
-                <div class="progress-bar bg-warning" style="width: 5%;"></div>
-              </div>
-              <span class="small text-muted ms-2">2</span>
-            </div>
-
-            <div class="d-flex align-items-center mb-2">
-              <span class="small text-muted me-2" style="width: 28px;">2★</span>
-              <div class="progress flex-grow-1" style="height: 6px;">
-                <div class="progress-bar bg-warning" style="width: 0%;"></div>
-              </div>
-              <span class="small text-muted ms-2">0</span>
-            </div>
-
-            <div class="d-flex align-items-center">
-              <span class="small text-muted me-2" style="width: 28px;">1★</span>
-              <div class="progress flex-grow-1" style="height: 6px;">
-                <div class="progress-bar bg-warning" style="width: 0%;"></div>
-              </div>
-              <span class="small text-muted ms-2">0</span>
-            </div>
+            {% endfor %}
           </div>
         </div>
 
@@ -385,7 +168,8 @@
             <i class="bi bi-pencil-square text-primary mb-2" style="font-size: 2rem;"></i>
             <h6 class="fw-bold mb-1">Been here recently?</h6>
             <p class="text-muted small mb-3">Share your experience with the community.</p>
-            <a href="/reviews/write?restaurant=1" class="btn btn-primary btn-sm px-4">
+            <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
+               class="btn btn-primary btn-sm px-4">
               Write a review
             </a>
           </div>
@@ -404,5 +188,5 @@
 <!-- jQuery — required for the like-button toggling behaviour -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <!-- Reuse feed.js for the like-button toggle logic (it already handles .like-btn) -->
-<script src="/static/js/feed.js"></script>
+<script src="{{ url_for('static', filename='js/feed.js') }}"></script>
 {% endblock %}

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% import "_macros.html" as macros %}
 
-{% block title %}PerthFoodie99 — RateFoodPerth{% endblock %}
+{% block title %}{{ user.username }} — RateFoodPerth{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -13,7 +14,8 @@
         </div>
         <h2 class="fw-bold">This profile is private</h2>
         <p class="text-muted">Follow this user to see their foodie journey and reviews.</p>
-        <button class="btn btn-primary px-4 mt-2">Request to follow</button>
+        <button class="btn btn-primary px-4 mt-2"
+                data-username="{{ user.username|lower }}">Request to follow</button>
     </div>
 
     {% else %}
@@ -23,12 +25,14 @@
         <div class="col-lg-4">
 
             <div class="card shadow-sm p-4 text-center mb-4">
-                <div class="avatar-placeholder rounded-circle bg-light mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
-                    <i class="bi bi-person-circle display-1 text-secondary"></i>
+                <div class="avatar-circle mx-auto mb-3"
+                     style="background-color: {{ user.avatar_color }}; width: 120px; height: 120px; font-size: 2.5rem;">
+                    {{ user.initials }}
                 </div>
-                <h2 class="mb-0">PerthFoodie99</h2>
+                <h2 class="mb-0">{{ user.username }}</h2>
                 <p class="text-muted small">Member since April 2026</p>
-                <button class="btn btn-primary w-100 mt-3" data-username="perthfoodie99">
+                <button class="btn btn-primary w-100 mt-3"
+                        data-username="{{ user.username|lower }}">
                     Follow
                 </button>
             </div>
@@ -36,11 +40,15 @@
             <div class="card shadow-sm p-4 mb-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h5 class="fw-bold mb-0">Activity streak</h5>
-                    <span class="fs-4"><i class="bi bi-fire text-danger"></i> 14</span>
+                    <span class="fs-4"><i class="bi bi-fire text-danger"></i> {{ user.streak_count }}</span>
                 </div>
+                {# Render 30 squares: filled for the days inside the user's streak,
+                   capped at 30 in case the streak ever grows past the window. #}
+                {% set capped_streak = user.streak_count if user.streak_count <= 30 else 30 %}
                 <div class="d-flex flex-wrap gap-1 justify-content-center">
                     {% for i in range(30) %}
-                        <div class="streak-square {{ 'bg-success' if i < 14 else 'bg-light border' }}" style="width:15px; height:15px; border-radius:3px;"></div>
+                        <div class="streak-square {{ 'bg-success' if i < capped_streak else 'bg-light border' }}"
+                             style="width:15px; height:15px; border-radius:3px;"></div>
                     {% endfor %}
                 </div>
                 <p class="text-center small text-muted mt-2">Last 30 days</p>
@@ -51,42 +59,44 @@
         <!-- ── RIGHT COLUMN: XP bars, badges, recent reviews ───────────── -->
         <div class="col-lg-8">
 
-            <!-- XP / level bars (one per dimension) -->
+            {#
+                XP / level bars — one per dimension.
+                Level model: each level needs 100 XP, so:
+                    level = (xp // 100) + 1
+                    progress into current level = xp % 100   (0..99)
+                Final form lands with Issue #20 (XP & streak calculation).
+            #}
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="fw-bold mb-4">Experience levels</h5>
 
-                <div class="mb-4">
+                {% for dim in [
+                    ('Writer',   user.writing_xp,  '#ff7e5f'),
+                    ('Accuracy', user.accuracy_xp, '#feb47b'),
+                    ('Explorer', user.explorer_xp, '#28a745'),
+                ] %}
+                {% set label = dim[0] %}
+                {% set xp = dim[1] %}
+                {% set colour = dim[2] %}
+                {% set level = (xp // 100) + 1 %}
+                {% set progress = xp % 100 %}
+                <div class="{{ 'mb-4' if not loop.last else 'mb-0' }}">
                     <div class="d-flex justify-content-between small mb-1">
-                        <span class="fw-bold">Level 4 Writer</span>
-                        <span class="text-muted">340/500 XP</span>
+                        <span class="fw-bold">Level {{ level }} {{ label }}</span>
+                        <span class="text-muted">{{ xp }} XP</span>
                     </div>
                     <div class="progress" style="height: 12px; border-radius: 10px;">
-                        <div class="progress-bar" style="width: 68%; background-color: #ff7e5f;"></div>
+                        <div class="progress-bar" style="width: {{ progress }}%; background-color: {{ colour }};"></div>
                     </div>
                 </div>
-
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between small mb-1">
-                        <span class="fw-bold">Level 2 Accuracy</span>
-                        <span class="text-muted">120/300 XP</span>
-                    </div>
-                    <div class="progress" style="height: 12px; border-radius: 10px;">
-                        <div class="progress-bar" style="width: 40%; background-color: #feb47b;"></div>
-                    </div>
-                </div>
-
-                <div class="mb-0">
-                    <div class="d-flex justify-content-between small mb-1">
-                        <span class="fw-bold">Level 7 Explorer</span>
-                        <span class="text-muted">850/1000 XP</span>
-                    </div>
-                    <div class="progress" style="height: 12px; border-radius: 10px;">
-                        <div class="progress-bar bg-success" style="width: 85%;"></div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
 
-            <!-- Badges earned -->
+            {#
+                Badges earned.
+                NOT yet driven by user data — Issue #8 (Badge model) and #21
+                (Badge awarding logic) will populate user.badges. For now the
+                same 6 are shown for every user, with the first 2 active.
+            #}
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="fw-bold mb-4">Badges earned</h5>
                 <div class="row row-cols-3 row-cols-md-6 g-3 text-center">
@@ -140,29 +150,30 @@
                 </div>
             </div>
 
-            <!-- Recent reviews -->
+            <!-- Recent reviews (this user's reviews, most-recent first) -->
             <h5 class="fw-bold mb-3">Recent reviews</h5>
-            {% for i in range(3) %}
-            <div class="card shadow-sm border-0 p-3 mb-3">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="fw-bold mb-1">
-                            <a href="/restaurant/1" class="text-decoration-none text-dark">Lalla Rookh</a>
-                        </h6>
-                        <div class="text-warning small mb-2">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-half"></i>
-                            <span class="text-muted ms-1">4.5</span>
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="card shadow-sm border-0 p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="fw-bold mb-1">
+                                <a href="{{ url_for('restaurants.detail', id=review.restaurant.id) }}"
+                                   class="text-decoration-none text-dark">{{ review.restaurant.name }}</a>
+                            </h6>
+                            <div class="text-warning small mb-2">
+                                {{ macros.stars(review.star_rating) }}
+                                <span class="text-muted ms-1">{{ "%.1f"|format(review.star_rating) }}</span>
+                            </div>
                         </div>
+                        <small class="text-muted">{{ review.created_at }}</small>
                     </div>
-                    <small class="text-muted">2 days ago</small>
+                    <p class="mb-0 text-muted small">{{ review.body }}</p>
                 </div>
-                <p class="mb-0 text-muted small">The pasta was incredible, but the service was a bit slow for a Friday. Definitely coming back!</p>
-            </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p class="text-muted small">No reviews yet.</p>
+            {% endif %}
 
         </div>
     </div>

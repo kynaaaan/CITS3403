@@ -21,4 +21,13 @@ def create_app(config_class=Config):
     app.register_blueprint(social_bp)
     app.register_blueprint(gamification_bp)
 
+    @app.context_processor
+    def inject_display_mappings():
+        from app.mock_data import SUBURB_DISPLAY, CUISINE_DISPLAY, PRICE_DISPLAY
+        return {
+            "SUBURB_DISPLAY": SUBURB_DISPLAY,
+            "CUISINE_DISPLAY": CUISINE_DISPLAY,
+            "PRICE_DISPLAY": PRICE_DISPLAY
+        }
+
     return app
