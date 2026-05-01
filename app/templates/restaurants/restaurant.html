@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}{{ restaurant.name }} — RateFoodPerth{% endblock %}
+
+{% block content %}
+
+{#
+     RESTAURANT HEADER
+     Hero-style banner mirroring index.html and search.html for visual
+     consistency.
+#}
+<section class="hero-section">
+  <div class="container py-5">
+    <div class="row align-items-center g-4">
+
+      <div class="col-lg-8">
+        <h1 class="hero-headline mb-2">
+          {{ restaurant.name }}<span class="logo-dot">.</span>
+        </h1>
+
+        <p class="hero-subtext mb-3">
+          <i class="bi bi-geo-alt-fill me-1"></i>{{ SUBURB_DISPLAY[restaurant.suburb] }}
+        </p>
+
+        <div class="mb-3 d-flex flex-wrap gap-2">
+          {% for tag in restaurant.cuisine_tags %}
+          <span class="badge rounded-pill bg-light text-dark px-3 py-2">{{ CUISINE_DISPLAY[tag] }}</span>
+          {% endfor %}
+          <span class="badge rounded-pill bg-dark text-light px-3 py-2">{{ PRICE_DISPLAY[restaurant.price_range] }}</span>
+        </div>
+
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <span class="text-warning fs-5">
+            {{ macros.stars(restaurant.avg_rating) }}
+          </span>
+          <span class="text-white fw-semibold fs-5">{{ "%.1f"|format(restaurant.avg_rating) }}</span>
+          <span class="text-white-50">· {{ restaurant.review_count }} reviews</span>
+        </div>
+      </div>
+
+      <div class="col-lg-4 text-lg-end">
+        <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
+           class="btn btn-light px-4 py-2 fw-semibold">
+          <i class="bi bi-pencil-square me-1"></i>Write a review
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- REVIEWS SECTION -->
+<div class="feed-wrapper">
+  <div class="container py-4">
+    <div class="row g-4">
+
+      <!-- ── REVIEWS COLUMN ─────────────────────────────────────────── -->
+      <div class="col-lg-8">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="fw-bold mb-0">
+            <i class="bi bi-chat-quote me-2 text-primary"></i>Reviews
+          </h4>
+          <span class="text-muted small">{{ reviews|length }} shown</span>
+        </div>
+
+        {% if reviews %}
+          {% for review in reviews %}
+          <div class="card shadow-sm border-0 mb-4 review-card"
+               data-suburb="{{ restaurant.suburb }}"
+               data-cuisine="{{ restaurant.cuisine_tags[0] }}">
+            <div class="card-body p-4">
+
+              <div class="d-flex align-items-center mb-3">
+                <div class="avatar-circle me-3"
+                     style="background-color: {{ review.user.avatar_color }};">{{ review.user.initials }}</div>
+                <div>
+                  <a href="{{ url_for('social.profile', username=review.user.username|lower) }}"
+                     class="fw-semibold text-dark text-decoration-none reviewer-name">{{ review.user.username }}</a>
+                  <div class="text-muted small">{{ review.created_at }}</div>
+                </div>
+              </div>
+
+              <div class="text-warning mb-2">
+                {{ macros.stars(review.star_rating) }}
+                <span class="text-muted ms-1 small">{{ "%.1f"|format(review.star_rating) }}</span>
+              </div>
+
+              {% if review.craving_tags %}
+              <div class="mb-2">
+                {% for tag in review.craving_tags %}
+                <span class="badge rounded-pill bg-warning text-dark me-1">{{ tag }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <p class="card-text text-muted small mb-3">{{ review.body }}</p>
+
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-secondary like-btn"
+                        data-type="accuracy" aria-label="Like this review for accuracy">
+                  <i class="bi bi-check-circle me-1"></i>Accuracy
+                  <span class="like-count">{{ review.likes.accuracy }}</span>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary like-btn"
+                        data-type="writing" aria-label="Like this review for writing quality">
+                  <i class="bi bi-pencil me-1"></i>Writing
+                  <span class="like-count">{{ review.likes.writing }}</span>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary like-btn"
+                        data-type="breadth" aria-label="Like this review for breadth of detail">
+                  <i class="bi bi-compass me-1"></i>Breadth
+                  <span class="like-count">{{ review.likes.breadth }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <!-- Empty state when no reviews exist for this restaurant yet -->
+          <div class="text-center py-5">
+            <i class="bi bi-chat-quote text-muted" style="font-size: 2.5rem;"></i>
+            <h6 class="mt-3 text-muted">No reviews yet</h6>
+            <p class="text-muted small">Be the first to review {{ restaurant.name }}.</p>
+            <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
+               class="btn btn-primary btn-sm">Write a review</a>
+          </div>
+        {% endif %}
+
+      </div><!-- end .col-lg-8 -->
+
+
+      <!-- ── SIDEBAR ────────────────────────────────────────────────── -->
+      <div class="col-lg-4">
+
+        <!-- Rating breakdown -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-bar-chart text-primary me-2"></i>Rating breakdown
+            </h6>
+
+            {# Loop 5 -> 1 so 5-stars sits at the top of the list. #}
+            {% set total = reviews|length or 1 %}
+            {% for stars in [5, 4, 3, 2, 1] %}
+              {% set count = rating_distribution[stars - 1] %}
+              {% set pct = (count / total * 100)|round|int %}
+              <div class="d-flex align-items-center {{ 'mb-2' if not loop.last else '' }}">
+                <span class="small text-muted me-2" style="width: 28px;">{{ stars }}★</span>
+                <div class="progress flex-grow-1" style="height: 6px;">
+                  <div class="progress-bar bg-warning" style="width: {{ pct }}%;"></div>
+                </div>
+                <span class="small text-muted ms-2">{{ count }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Write review CTA -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body text-center py-4">
+            <i class="bi bi-pencil-square text-primary mb-2" style="font-size: 2rem;"></i>
+            <h6 class="fw-bold mb-1">Been here recently?</h6>
+            <p class="text-muted small mb-3">Share your experience with the community.</p>
+            <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
+               class="btn btn-primary btn-sm px-4">
+              Write a review
+            </a>
+          </div>
+        </div>
+
+      </div><!-- end .col-lg-4 -->
+
+    </div><!-- end .row -->
+  </div><!-- end .container -->
+</div><!-- end .feed-wrapper -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+{% endblock %}

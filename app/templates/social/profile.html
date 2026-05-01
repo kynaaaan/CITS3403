@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}{{ user.username }} — RateFoodPerth{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    {% if user_is_private %}
+    <!-- Private profile state shown to non-followers when profile_is_public = False -->
+    <div class="card shadow-lg border-0 p-5 text-center">
+        <div class="mb-4">
+            <i class="bi bi-lock-fill text-muted" style="font-size: 4rem;"></i>
+        </div>
+        <h2 class="fw-bold">This profile is private</h2>
+        <p class="text-muted">Follow this user to see their foodie journey and reviews.</p>
+        <button class="btn btn-primary px-4 mt-2"
+                data-username="{{ user.username|lower }}">Request to follow</button>
+    </div>
+
+    {% else %}
+    <div class="row g-4">
+
+        <!-- ── LEFT COLUMN: avatar, follow button, streak ──────────────── -->
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm p-4 text-center mb-4">
+                <div class="avatar-circle mx-auto mb-3"
+                     style="background-color: {{ user.avatar_color }}; width: 120px; height: 120px; font-size: 2.5rem;">
+                    {{ user.initials }}
+                </div>
+                <h2 class="mb-0">{{ user.username }}</h2>
+                <p class="text-muted small">Member since April 2026</p>
+                <button class="btn btn-primary w-100 mt-3"
+                        data-username="{{ user.username|lower }}">
+                    Follow
+                </button>
+            </div>
+
+            <div class="card shadow-sm p-4 mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold mb-0">Activity streak</h5>
+                    <span class="fs-4"><i class="bi bi-fire text-danger"></i> {{ user.streak_count }}</span>
+                </div>
+                {# Render 30 squares: filled for the days inside the user's streak,
+                   capped at 30 in case the streak ever grows past the window. #}
+                {% set capped_streak = user.streak_count if user.streak_count <= 30 else 30 %}
+                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                    {% for i in range(30) %}
+                        <div class="streak-square {{ 'bg-success' if i < capped_streak else 'bg-light border' }}"
+                             style="width:15px; height:15px; border-radius:3px;"></div>
+                    {% endfor %}
+                </div>
+                <p class="text-center small text-muted mt-2">Last 30 days</p>
+            </div>
+
+        </div>
+
+        <!-- ── RIGHT COLUMN: XP bars, badges, recent reviews ───────────── -->
+        <div class="col-lg-8">
+
+            {# Placeholder XP curve: each level = 100 XP, progress = xp % 100. #}
+            <div class="card shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-4">Experience levels</h5>
+
+                {% for dim in [
+                    ('Writer',   user.writing_xp,  '#ff7e5f'),
+                    ('Accuracy', user.accuracy_xp, '#feb47b'),
+                    ('Explorer', user.explorer_xp, '#28a745'),
+                ] %}
+                {% set label = dim[0] %}
+                {% set xp = dim[1] %}
+                {% set colour = dim[2] %}
+                {% set level = (xp // 100) + 1 %}
+                {% set progress = xp % 100 %}
+                <div class="{{ 'mb-4' if not loop.last else 'mb-0' }}">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="fw-bold">Level {{ level }} {{ label }}</span>
+                        <span class="text-muted">{{ xp }} XP</span>
+                    </div>
+                    <div class="progress" style="height: 12px; border-radius: 10px;">
+                        <div class="progress-bar" style="width: {{ progress }}%; background-color: {{ colour }};"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {# Badges are still hardcoded — no user.badges field yet. #}
+            <div class="card shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-4">Badges earned</h5>
+                <div class="row row-cols-3 row-cols-md-6 g-3 text-center">
+
+                    <div class="col">
+                        <div class="badge-box bg-light p-2 rounded">
+                            <i class="bi bi-award-fill text-warning fs-3"></i>
+                            <div style="font-size: 0.6rem; font-weight: bold;">FIRST BITE</div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="badge-box bg-light p-2 rounded">
+                            <i class="bi bi-pencil-fill text-primary fs-3"></i>
+                            <div style="font-size: 0.6rem; font-weight: bold;">PEN &amp; FORK</div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="badge-box bg-light p-2 rounded opacity-50 position-relative" style="filter: grayscale(1);">
+                            <i class="bi bi-geo-alt-fill fs-3 text-secondary"></i>
+                            <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger" style="font-size: 0.7rem;"></i>
+                            <div style="font-size: 0.6rem; font-weight: bold;">SUBURB SCOUT</div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="badge-box bg-light p-2 rounded opacity-50 position-relative" style="filter: grayscale(1);">
+                            <i class="bi bi-fire fs-3 text-secondary"></i>
+                            <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger" style="font-size: 0.7rem;"></i>
+                            <div style="font-size: 0.6rem; font-weight: bold;">ON FIRE</div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="badge-box bg-light p-2 rounded opacity-50 position-relative" style="filter: grayscale(1);">
+                            <i class="bi bi-check-circle-fill fs-3 text-secondary"></i>
+                            <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger" style="font-size: 0.7rem;"></i>
+                            <div style="font-size: 0.6rem; font-weight: bold;">RUTHLESSLY ACCURATE</div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="badge-box bg-light p-2 rounded opacity-50 position-relative" style="filter: grayscale(1);">
+                            <i class="bi bi-globe2 fs-3 text-secondary"></i>
+                            <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger" style="font-size: 0.7rem;"></i>
+                            <div style="font-size: 0.6rem; font-weight: bold;">GLOBE TROTTER</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Recent reviews -->
+            <h5 class="fw-bold mb-3">Recent reviews</h5>
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="card shadow-sm border-0 p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="fw-bold mb-1">
+                                <a href="{{ url_for('restaurants.detail', id=review.restaurant.id) }}"
+                                   class="text-decoration-none text-dark">{{ review.restaurant.name }}</a>
+                            </h6>
+                            <div class="text-warning small mb-2">
+                                {{ macros.stars(review.star_rating) }}
+                                <span class="text-muted ms-1">{{ "%.1f"|format(review.star_rating) }}</span>
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ review.created_at }}</small>
+                    </div>
+                    <p class="mb-0 text-muted small">{{ review.body }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted small">No reviews yet.</p>
+            {% endif %}
+
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+
+{% block title %}Discover — RateFoodPerth{% endblock %}
+
+{% block content %}
+
+<!--
+     PAGE HEADER
+     Title and short description for the browse / discovery page.
+-->
+<section class="hero-section">
+  <div class="container py-5">
+    <h1 class="hero-headline mb-2">
+      Discover restaurants<span class="logo-dot">.</span>
+    </h1>
+    <p class="hero-subtext mb-0">
+      Browse Perth's best eats by suburb, cuisine, or price range.
+    </p>
+  </div>
+</section>
+
+
+<!--
+     FILTER BAR + RESTAURANT GRID
+     Sits on the white feed-wrapper surface, matching the home page layout.
+-->
+<div class="feed-wrapper">
+  <div class="container py-4">
+
+    <!-- ── FILTER BAR ────────────────────────────────────────────────── -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body py-3">
+        <div class="row g-3 align-items-end">
+
+          <div class="col-md-4">
+            <label for="filterSuburb" class="form-label small fw-semibold mb-1">
+              <i class="bi bi-geo-alt me-1"></i>Suburb
+            </label>
+            <select id="filterSuburb" class="form-select form-select-sm"
+                    aria-label="Filter by suburb">
+              <option value="">All suburbs</option>
+              {% for slug, label in SUBURB_DISPLAY.items() %}
+              <option value="{{ slug }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label for="filterCuisine" class="form-label small fw-semibold mb-1">
+              <i class="bi bi-egg-fried me-1"></i>Cuisine
+            </label>
+            <select id="filterCuisine" class="form-select form-select-sm"
+                    aria-label="Filter by cuisine">
+              <option value="">All cuisines</option>
+              {% for slug, label in CUISINE_DISPLAY.items() %}
+              <option value="{{ slug }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label for="filterPrice" class="form-label small fw-semibold mb-1">
+              <i class="bi bi-cash-stack me-1"></i>Price range
+            </label>
+            <select id="filterPrice" class="form-select form-select-sm"
+                    aria-label="Filter by price range">
+              <option value="">Any price</option>
+              {% for val, label in PRICE_DISPLAY.items() %}
+              <option value="{{ val }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ── RESULTS COUNT ─────────────────────────────────────────────── -->
+    <p class="text-muted small mb-3" id="resultsCount">Showing {{ restaurants|length }} restaurants</p>
+
+
+    <!-- ── RESTAURANT GRID ───────────────────────────────────────────── -->
+    <div class="row g-4" id="restaurantGrid">
+
+      {% for res in restaurants %}
+      <div class="col-sm-6 col-lg-4 col-xl-3 restaurant-col"
+           data-suburb="{{ res.suburb }}"
+           data-cuisine="{{ res.cuisine_tags[0] }}"
+           data-price="{{ res.price_range }}">
+        <a href="{{ url_for('restaurants.detail', id=res.id) }}" class="text-decoration-none">
+          <div class="card shadow-sm border-0 h-100 restaurant-card">
+            <div class="card-body p-3">
+              <h6 class="fw-bold mb-1 text-dark">{{ res.name }}</h6>
+              <p class="text-muted small mb-2">
+                <i class="bi bi-geo-alt-fill me-1"></i>{{ SUBURB_DISPLAY[res.suburb] }}
+              </p>
+              <div class="mb-2">
+                {% for tag in res.cuisine_tags %}
+                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary me-1">{{ CUISINE_DISPLAY[tag] }}</span>
+                {% endfor %}
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-warning small">
+                  {{ macros.stars(res.avg_rating) }}
+                  <span class="text-muted ms-1">{{ "%.1f"|format(res.avg_rating) }}</span>
+                </span>
+                <span class="text-muted small">{{ res.review_count }} reviews</span>
+              </div>
+              <div class="mt-2">
+                <span class="badge bg-dark bg-opacity-10 text-dark">{{ PRICE_DISPLAY[res.price_range] }}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+
+    </div><!-- end #restaurantGrid -->
+
+
+    <!-- Empty state — shown when no restaurants match the active filters -->
+    <div id="emptyState" class="text-center py-5" style="display:none;">
+      <i class="bi bi-shop text-muted" style="font-size: 2.5rem;"></i>
+      <h6 class="mt-3 text-muted">No restaurants match your filters</h6>
+      <p class="text-muted small">Try broadening your search or clearing a filter.</p>
+    </div>
+
+  </div><!-- end .container -->
+</div><!-- end .feed-wrapper -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock %}

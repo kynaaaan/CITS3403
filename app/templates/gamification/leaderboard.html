@@ -50,34 +50,44 @@
                                 </thead>
                                 <tbody>
                                     <tr class="leaderboard-row">
-                                        <td class="rank-1"><i class="fas fa-crown text-warning"></i> 1</td>
+                                        <td class="rank-1"><i class="bi bi-trophy-fill text-warning"></i> 1</td>
                                         <td>
-                                            <strong>@PerthFoodie</strong>
+                                            <a href="{{ url_for('social.profile', username='tasteexplorer') }}" class="fw-bold text-decoration-none text-dark">TasteExplorer</a>
                                             <div class="xp-bar-container">
-                                                <div class="xp-bar-fill" style="width: 90%;"></div>
+                                                <div class="xp-bar-fill" style="width: 100%;"></div>
                                             </div>
                                         </td>
-                                        <td class="text-end fw-bold">1,250</td>
+                                        <td class="text-end fw-bold">1,240</td>
                                     </tr>
                                     <tr class="leaderboard-row">
                                         <td class="rank-2">2</td>
                                         <td>
-                                            <strong>@SushiMaster</strong>
+                                            <a href="{{ url_for('social.profile', username='suburbscout42') }}" class="fw-bold text-decoration-none text-dark">SuburbScout42</a>
                                             <div class="xp-bar-container">
-                                                <div class="xp-bar-fill" style="width: 75%;"></div>
+                                                <div class="xp-bar-fill" style="width: 79%;"></div>
                                             </div>
                                         </td>
-                                        <td class="text-end fw-bold">1,100</td>
+                                        <td class="text-end fw-bold">980</td>
                                     </tr>
                                     <tr class="leaderboard-row">
                                         <td class="rank-3">3</td>
                                         <td>
-                                            <strong>@BurgerQueen</strong>
+                                            <a href="{{ url_for('social.profile', username='noodlequeen_') }}" class="fw-bold text-decoration-none text-dark">noodlequeen_</a>
                                             <div class="xp-bar-container">
-                                                <div class="xp-bar-fill" style="width: 60%;"></div>
+                                                <div class="xp-bar-fill" style="width: 70%;"></div>
                                             </div>
                                         </td>
-                                        <td class="text-end fw-bold">950</td>
+                                        <td class="text-end fw-bold">870</td>
+                                    </tr>
+                                    <tr class="leaderboard-row">
+                                        <td>4</td>
+                                        <td>
+                                            <a href="{{ url_for('social.profile', username='perthfoodie99') }}" class="fw-bold text-decoration-none text-dark">PerthFoodie99</a>
+                                            <div class="xp-bar-container">
+                                                <div class="xp-bar-fill" style="width: 61%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-end fw-bold">760</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -87,14 +97,14 @@
 
                 <div class="tab-pane fade" id="dishes">
                     <div class="p-5 text-center">
-                        <i class="fas fa-utensils fa-3x text-muted mb-3 opacity-50"></i>
+                        <i class="bi bi-egg-fried text-muted mb-3 opacity-50" style="font-size: 3rem;"></i>
                         <h6 class="text-muted">Trending dishes coming soon!</h6>
                     </div>
                 </div>
 
                 <div class="tab-pane fade" id="explorers">
                     <div class="p-5 text-center">
-                        <i class="fas fa-map-marked-alt fa-3x text-muted mb-3 opacity-50"></i>
+                        <i class="bi bi-compass text-muted mb-3 opacity-50" style="font-size: 3rem;"></i>
                         <h6 class="text-muted">Explorer rankings are being calculated...</h6>
                     </div>
                 </div>
@@ -108,5 +118,5 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script src="/static/js/leaderboard.js"></script>
+    <script src="{{ url_for('static', filename='js/leaderboard.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,20 @@
+{#
+    Shared Jinja macros. Import once per template:
+        {% import "_macros.html" as macros %}
+    Then call:
+        {{ macros.stars(4.5) }}    -> 4 full + 1 half
+        {{ macros.stars(5) }}      -> 5 full
+        {{ macros.stars(3) }}      -> 3 full + 2 empty
+#}
+
+
+{# Render a 5-star rating using Bootstrap Icons.
+   Accepts integer (per-review star_rating) or float (avg_rating). #}
+{% macro stars(rating) %}
+  {% set full = rating|int %}
+  {% set half = 1 if (rating - full) >= 0.5 else 0 %}
+  {% set empty = 5 - full - half %}
+  {% for _ in range(full) %}<i class="bi bi-star-fill"></i>{% endfor %}
+  {% for _ in range(half) %}<i class="bi bi-star-half"></i>{% endfor %}
+  {% for _ in range(empty) %}<i class="bi bi-star"></i>{% endfor %}
+{% endmacro %}

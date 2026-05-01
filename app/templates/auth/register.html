@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up — RateFoodPerth{% endblock %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-5">
+
+        <div class="card shadow-lg border-0 p-4">
+            <div class="card-body">
+
+                <h2 class="text-center mb-2">
+                    <span class="logo-text">Join the community</span><span class="logo-dot">.</span>
+                </h2>
+                <p class="text-muted text-center mb-4">
+                    Create an account to review Perth's best food.
+                </p>
+
+                {# CSRF token will render here once Flask-WTF is wired in. #}
+                <form action="{{ url_for('auth.register') }}" method="POST">
+
+                    <div class="mb-3 position-relative">
+                        <label for="usernameInput" class="form-label">Username</label>
+                        <i class="bi bi-person input-icon"></i>
+                        <input type="text" name="username" id="usernameInput"
+                               class="form-control ps-5" required>
+                    </div>
+
+                    <div class="mb-3 position-relative">
+                        <label for="emailInput" class="form-label">Email</label>
+                        <i class="bi bi-envelope input-icon"></i>
+                        <input type="email" name="email" id="emailInput"
+                               class="form-control ps-5" required>
+                    </div>
+
+                    <div class="mb-3 position-relative">
+                        <label for="passwordInput" class="form-label">Password</label>
+                        <i class="bi bi-lock input-icon"></i>
+                        <input type="password" name="password" id="passwordInput"
+                               class="form-control ps-5" required>
+                        <div id="passwordError" class="text-danger small mt-1" style="display:none;"></div>
+                    </div>
+
+                    <div class="mb-3 position-relative">
+                        <label for="password2Input" class="form-label">Confirm password</label>
+                        <i class="bi bi-lock-fill input-icon"></i>
+                        <input type="password" name="password2" id="password2Input"
+                               class="form-control ps-5" required>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox"
+                               name="is_restaurant_account" id="isRestaurantAccount">
+                        <label class="form-check-label small" for="isRestaurantAccount">
+                            I'm registering as a <strong>restaurant</strong> (lets you claim and manage your restaurant page)
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                        Create account
+                    </button>
+                </form>
+
+                <hr class="my-4">
+
+                <p class="text-center mb-0">
+                    Already have an account?
+                    <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-bold">Log in</a>
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/login_utils.js') }}"></script>
+{% endblock %}
