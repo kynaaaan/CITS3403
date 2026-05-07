@@ -1,11 +1,24 @@
 from flask import Flask
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
+
+# Defined at module scope so blueprints / models / scripts can import them.
+db = SQLAlchemy()
+migrate = Migrate()
 
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    # Import models so Alembic sees them in db.metadata when generating
+    # migrations. Must come after db.init_app.
+    from app import models  # noqa: F401
 
     from app.auth.routes import bp as auth_bp
     from app.main.routes import bp as main_bp
@@ -27,7 +40,7 @@ def create_app(config_class=Config):
         return {
             "SUBURB_DISPLAY": SUBURB_DISPLAY,
             "CUISINE_DISPLAY": CUISINE_DISPLAY,
-            "PRICE_DISPLAY": PRICE_DISPLAY
+            "PRICE_DISPLAY": PRICE_DISPLAY,
         }
 
     return app
