@@ -39,12 +39,40 @@ class User(db.Model):
     reviews = db.relationship(
         "Review", back_populates="user", cascade="all, delete-orphan",
     )
+    badges = db.relationship(
+        "Badge", back_populates="user", cascade="all, delete-orphan",
+    )
+
+    following = db.relationship(
+        "Follow",
+        foreign_keys="Follow.follower_id",
+        back_populates="follower",
+        cascade="all, delete-orphan",
+    )
+    followers = db.relationship(
+        "Follow",
+        foreign_keys="Follow.followed_id",
+        back_populates="followed",
+        cascade="all, delete-orphan",
+    )
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def is_following(self, other):
+        return any(f.followed_id == other.id for f in self.following)
+
+    def follow(self, other):
+        if other.id != self.id and not self.is_following(other):
+            db.session.add(Follow(follower_id=self.id, followed_id=other.id))
+
+    def unfollow(self, other):
+        link = next((f for f in self.following if f.followed_id == other.id), None)
+        if link:
+            db.session.delete(link)
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -111,3 +139,49 @@ class ReviewLike(db.Model):
     created_at = db.Column(db.DateTime, default=_utcnow, nullable=False)
 
     review = db.relationship("Review", back_populates="likes")
+
+
+class BadgeType(enum.Enum):
+    """
+    Badge types and their accompanying reqs
+    """
+    FIRST_BITE = "first_bite" # First review posted
+    SUBURB_SCOUT = "suburb_scout" # 5+ distinct suburbs reviewed
+    GLOBE_TROTTER = "globe_trotter" # 6+ distinct cuisines reviewed
+    ON_FIRE = "on_fire" # 7 day streak
+    PEN_AND_FORK = "pen_and_fork" # Level 5 Writing XP
+    RUTHLESSLY_ACCURATE = "ruthlessly_accurate"  # 50 accuracy likes received
+
+
+class Follow(db.Model):
+    __tablename__ = "follows"
+    __table_args__ = (
+        UniqueConstraint("follower_id", "followed_id", name="uq_follow"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    follower_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    followed_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    created_at = db.Column(db.DateTime, default=_utcnow, nullable=False)
+
+    follower = db.relationship(
+        "User", foreign_keys=[follower_id], back_populates="following",
+    )
+    followed = db.relationship(
+        "User", foreign_keys=[followed_id], back_populates="followers",
+    )
+
+
+class Badge(db.Model):
+    __tablename__ = "badges"
+    __table_args__ = (
+        # Each badge is awarded at most once per user.
+        UniqueConstraint("user_id", "badge_type", name="uq_user_badge"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    badge_type = db.Column(Enum(BadgeType), nullable=False)
+    awarded_at = db.Column(db.DateTime, default=_utcnow, nullable=False)
+
+    user = db.relationship("User", back_populates="badges")
