@@ -3,8 +3,8 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
+from utils import humanise_time
 
-# Defined at module scope so blueprints / models / scripts can import them.
 db = SQLAlchemy()
 migrate = Migrate()
 
@@ -16,9 +16,9 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Import models so Alembic sees them in db.metadata when generating
-    # migrations. Must come after db.init_app.
-    from app import models  # noqa: F401
+    app.jinja_env.filters["humanise_time"] = humanise_time
+
+    from app import models 
 
     from app.auth.routes import bp as auth_bp
     from app.main.routes import bp as main_bp
@@ -33,6 +33,9 @@ def create_app(config_class=Config):
     app.register_blueprint(reviews_bp)
     app.register_blueprint(social_bp)
     app.register_blueprint(gamification_bp)
+
+    from app.seed import seed_command
+    app.cli.add_command(seed_command)
 
     @app.context_processor
     def inject_display_mappings():
