@@ -26,7 +26,7 @@
 
             <div class="card shadow-sm p-4 text-center mb-4">
                 <div class="avatar-circle mx-auto mb-3"
-                     style="background-color: {{ user.avatar_color }}; width: 120px; height: 120px; font-size: 2.5rem;">
+                     style="background-color: {{ user.avatar_colour }}; width: 120px; height: 120px; font-size: 2.5rem;">
                     {{ user.initials }}
                 </div>
                 <h2 class="mb-0">{{ user.username }}</h2>
@@ -155,7 +155,7 @@
                                 <span class="text-muted ms-1">{{ "%.1f"|format(review.star_rating) }}</span>
                             </div>
                         </div>
-                        <small class="text-muted">{{ review.created_at }}</small>
+                        <small class="text-muted">{{ review.created_at|humanise_time }}</small>
                     </div>
                     <p class="mb-0 text-muted small">{{ review.body }}</p>
                 </div>

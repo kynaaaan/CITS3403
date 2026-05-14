@@ -5,11 +5,6 @@
 
 {% block content %}
 
-{#
-     RESTAURANT HEADER
-     Hero-style banner mirroring index.html and search.html for visual
-     consistency.
-#}
 <section class="hero-section">
   <div class="container py-5">
     <div class="row align-items-center g-4">
@@ -75,11 +70,11 @@
 
               <div class="d-flex align-items-center mb-3">
                 <div class="avatar-circle me-3"
-                     style="background-color: {{ review.user.avatar_color }};">{{ review.user.initials }}</div>
+                     style="background-color: {{ review.user.avatar_colour }};">{{ review.user.initials }}</div>
                 <div>
                   <a href="{{ url_for('social.profile', username=review.user.username|lower) }}"
                      class="fw-semibold text-dark text-decoration-none reviewer-name">{{ review.user.username }}</a>
-                  <div class="text-muted small">{{ review.created_at }}</div>
+                  <div class="text-muted small">{{ review.created_at|humanise_time }}</div>
                 </div>
               </div>
 
@@ -102,17 +97,17 @@
                 <button class="btn btn-sm btn-outline-secondary like-btn"
                         data-type="accuracy" aria-label="Like this review for accuracy">
                   <i class="bi bi-check-circle me-1"></i>Accuracy
-                  <span class="like-count">{{ review.likes.accuracy }}</span>
+                  <span class="like-count">{{ review.like_counts.accuracy }}</span>
                 </button>
                 <button class="btn btn-sm btn-outline-secondary like-btn"
                         data-type="writing" aria-label="Like this review for writing quality">
                   <i class="bi bi-pencil me-1"></i>Writing
-                  <span class="like-count">{{ review.likes.writing }}</span>
+                  <span class="like-count">{{ review.like_counts.writing }}</span>
                 </button>
                 <button class="btn btn-sm btn-outline-secondary like-btn"
                         data-type="breadth" aria-label="Like this review for breadth of detail">
                   <i class="bi bi-compass me-1"></i>Breadth
-                  <span class="like-count">{{ review.likes.breadth }}</span>
+                  <span class="like-count">{{ review.like_counts.breadth }}</span>
                 </button>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import enum
+import hashlib
 from datetime import datetime, timezone
 
 from sqlalchemy import Enum, UniqueConstraint
@@ -9,6 +10,12 @@ from app import db
 
 def _utcnow():
     return datetime.now(timezone.utc)
+
+
+_AVATAR_PALETTE = [
+    "#ff7e5f", "#0d6efd", "#20c997", "#6f42c1", "#d63384",
+    "#fd7e14", "#198754", "#0dcaf0",
+]
 
 
 class LikeDimension(enum.Enum):
@@ -62,6 +69,16 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    @property
+    def initials(self):
+        return self.username[:2].upper() if self.username else "?"
+
+    @property
+    def avatar_colour(self):
+        # Hash username so the colour is deterministic across processes.
+        digest = hashlib.md5(self.username.encode("utf-8")).hexdigest()
+        return _AVATAR_PALETTE[int(digest, 16) % len(_AVATAR_PALETTE)]
+
     def is_following(self, other):
         return any(f.followed_id == other.id for f in self.following)
 
@@ -96,6 +113,16 @@ class Restaurant(db.Model):
         "Review", back_populates="restaurant", cascade="all, delete-orphan",
     )
 
+    @property
+    def avg_rating(self):
+        if not self.reviews:
+            return 0.0
+        return sum(r.star_rating for r in self.reviews) / len(self.reviews)
+
+    @property
+    def review_count(self):
+        return len(self.reviews)
+
     def __repr__(self):
         return f"<Restaurant {self.name}>"
 
@@ -119,6 +146,13 @@ class Review(db.Model):
     likes = db.relationship(
         "ReviewLike", back_populates="review", cascade="all, delete-orphan",
     )
+
+    @property
+    def like_counts(self):
+        counts = {"accuracy": 0, "writing": 0, "breadth": 0}
+        for like in self.likes:
+            counts[like.dimension.value] += 1
+        return counts
 
     def __repr__(self):
         return f"<Review #{self.id} {self.star_rating}★>"
