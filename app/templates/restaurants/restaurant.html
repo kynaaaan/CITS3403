@@ -35,10 +35,31 @@
       </div>
 
       <div class="col-lg-4 text-lg-end">
-        <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
-           class="btn btn-light px-4 py-2 fw-semibold">
-          <i class="bi bi-pencil-square me-1"></i>Write a review
-        </a>
+        <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+
+          {% if current_user.is_authenticated
+                and current_user.id == restaurant.owner_id %}
+            <a href="{{ url_for('restaurants.edit', id=restaurant.id) }}"
+               class="btn btn-outline-light px-4 py-2 fw-semibold">
+              <i class="bi bi-pencil-square me-1"></i>Edit restaurant
+            </a>
+          {% elif current_user.is_authenticated
+                  and current_user.is_restaurant_account
+                  and restaurant.owner_id is none %}
+            <form action="{{ url_for('restaurants.claim', id=restaurant.id) }}"
+                  method="POST" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-warning px-4 py-2 fw-semibold">
+                <i class="bi bi-patch-check me-1"></i>Claim this restaurant
+              </button>
+            </form>
+          {% endif %}
+
+          <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
+             class="btn btn-light px-4 py-2 fw-semibold">
+            <i class="bi bi-pencil-square me-1"></i>Write a review
+          </a>
+        </div>
       </div>
 
     </div>

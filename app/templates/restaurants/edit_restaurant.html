@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ restaurant.name }} — RateFoodPerth{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 700px;">
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+            <h1 class="mb-1">
+                Edit restaurant<span class="logo-dot">.</span>
+            </h1>
+            <p class="text-muted mb-4">
+                Update the details for <strong>{{ restaurant.name }}</strong>.
+            </p>
+
+            {# Display any non-field errors (e.g. CSRF failure) #}
+            {% for error in form.errors.get('csrf_token', []) %}
+            <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+
+            <form action="{{ url_for('restaurants.edit', id=restaurant.id) }}" method="POST" novalidate>
+                {{ form.hidden_tag() }}
+
+                {# ── Restaurant name ── #}
+                <div class="mb-3">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                    {% for error in form.name.errors %}
+                    <div class="invalid-feedback">{{ error|safe }}</div>
+                    {% endfor %}
+                </div>
+
+                {# ── Suburb ── #}
+                <div class="mb-3">
+                    {{ form.suburb.label(class="form-label") }}
+                    {{ form.suburb(class="form-select" + (" is-invalid" if form.suburb.errors else "")) }}
+                    {% for error in form.suburb.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                {# ── Cuisine tags (multi-select checkboxes) ── #}
+                <div class="mb-3">
+                    <span class="form-label d-block">Cuisine tags</span>
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for subfield in form.cuisine_tags %}
+                        <div class="form-check">
+                            {{ subfield(class="form-check-input") }}
+                            {{ subfield.label(class="form-check-label") }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% for error in form.cuisine_tags.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                {# ── Price range ── #}
+                <div class="mb-4">
+                    <span class="form-label d-block">Price range</span>
+                    {% for subfield in form.price_range %}
+                    <div class="form-check form-check-inline">
+                        {{ subfield(class="form-check-input" + (" is-invalid" if form.price_range.errors else "")) }}
+                        {{ subfield.label(class="form-check-label") }}
+                    </div>
+                    {% endfor %}
+                    {% for error in form.price_range.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1 py-2 fw-bold">
+                        Save changes
+                    </button>
+                    <a href="{{ url_for('restaurants.detail', id=restaurant.id) }}"
+                       class="btn btn-outline-secondary py-2">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
