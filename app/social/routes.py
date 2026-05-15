@@ -1,26 +1,43 @@
 from flask import Blueprint, render_template, abort
 
-from app.mock_data import REVIEWS, enrich_review, user_by_username
+from app.models import User
+from app.models import Review
+from app.models import Badge
 
 bp = Blueprint('social', __name__)
 
 
 @bp.route('/profile/<username>')
 def profile(username):
-    user = user_by_username(username)
+
+    user = User.query.filter_by(
+        username=username
+    ).first()
+
     if not user:
         abort(404)
 
-    # This user's reviews, pre-joined with restaurant info, most-recent first.
-    # Mock data is already in chronological order (newest = lower id), so we
-    # just filter and take the top 5.
-    user_reviews = [
-        enrich_review(r) for r in REVIEWS if r["user_id"] == user["id"]
-    ][:5]
+    reviews = Review.query.filter_by(
+        user_id=user.id
+    ).order_by(
+        Review.created_at.desc()
+    ).limit(5).all()
+
+    badges = Badge.query.filter_by(
+        user_id=user.id
+    ).all()
+
+    total_xp = (
+        user.writing_xp
+        + user.accuracy_xp
+        + user.explorer_xp
+    )
 
     return render_template(
         'social/profile.html',
         user=user,
-        reviews=user_reviews,
+        reviews=reviews,
+        badges=badges,
+        total_xp=total_xp,
         user_is_private=False,
     )
