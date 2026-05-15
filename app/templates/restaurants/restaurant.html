@@ -162,6 +162,22 @@
       <!-- ── SIDEBAR ────────────────────────────────────────────────── -->
       <div class="col-lg-4">
 
+        {% if reviews|length >= 2 %}
+        <!-- Rating over time -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-graph-up text-primary me-2"></i>Rating over time
+            </h6>
+            <div style="height: 90px;">
+              <canvas id="ratingSparkline"
+                      data-labels='{{ sparkline_labels|tojson }}'
+                      data-ratings='{{ sparkline_data|tojson }}'></canvas>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
         <!-- Rating breakdown -->
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-body">
@@ -231,4 +247,9 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+
+{% if reviews|length >= 2 %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/restaurant_sparkline.js') }}"></script>
+{% endif %}
 {% endblock %}

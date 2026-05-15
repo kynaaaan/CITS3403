@@ -39,6 +39,11 @@ def detail(id):
                 if len(followed_authors) >= 3:
                     break
 
+    # SPARKLINE DATA
+    chronological = list(reversed(reviews))
+    sparkline_labels = [r.created_at.strftime('%b %d') for r in chronological]
+    sparkline_data = [r.star_rating for r in chronological]
+
     return render_template(
         'restaurants/restaurant.html',
         restaurant=restaurant,
@@ -46,6 +51,8 @@ def detail(id):
         rating_distribution=distribution,
         top_cravings=top_cravings,
         followed_authors=followed_authors,
+        sparkline_labels=sparkline_labels,
+        sparkline_data=sparkline_data,
     )
 
 
