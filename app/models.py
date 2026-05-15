@@ -6,7 +6,7 @@ from flask_login import UserMixin
 from sqlalchemy import Enum, UniqueConstraint
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app import db
+from app import db, login_manager
 
 
 def _utcnow():
@@ -220,3 +220,8 @@ class Badge(db.Model):
     awarded_at = db.Column(db.DateTime, default=_utcnow, nullable=False)
 
     user = db.relationship("User", back_populates="badges")
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
