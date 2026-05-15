@@ -4,34 +4,23 @@ from flask import render_template
 from flask_login import login_required
 from flask_login import current_user
 
-from app.mock_data import (
-    RESTAURANTS,
-    REVIEWS,
-    USERS,
-    enrich_review,
-)
+from app.models import Restaurant, Review, User
 
 bp = Blueprint('main', __name__)
 
 
 @bp.route('/')
 def index():
+    reviews = Review.query.order_by(Review.created_at.desc()).all()
 
-    reviews = [enrich_review(r) for r in REVIEWS]
+    total_xp = User.writing_xp + User.accuracy_xp + User.explorer_xp
+    top_reviewers = User.query.order_by(total_xp.desc()).limit(4).all()
 
-    top_reviewers = sorted(
-        USERS,
-        key=lambda u: (
-            u["writing_xp"]
-            + u["accuracy_xp"]
-            + u["explorer_xp"]
-        ),
-        reverse=True,
-    )[:4]
-
+    # avg_rating is a @property so sort Python side.
+    # THIS WILL NEED TO BE MADE MUCH MORE EFFICIENT FOR LARGER N OF RESTAURANTS
     trending_restaurants = sorted(
-        RESTAURANTS,
-        key=lambda r: r["avg_rating"],
+        Restaurant.query.all(),
+        key=lambda r: r.avg_rating,
         reverse=True,
     )[:5]
 
@@ -45,10 +34,9 @@ def index():
 
 @bp.route('/search')
 def search():
-
     return render_template(
         'main/search.html',
-        restaurants=RESTAURANTS,
+        restaurants=Restaurant.query.all(),
     )
 
 

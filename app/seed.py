@@ -140,11 +140,17 @@ def seed_database(reset=False):
     likes_total = _seed_reviews_and_likes()
     follows_total = _seed_follows()
 
+    from app.gamification.logic import recompute_user_state
+    for u in User.query.all():
+        recompute_user_state(u)
+
     db.session.commit()
+
+    from app.models import Badge
     click.echo(
         f"Seeded {len(USERS)} users, {len(RESTAURANTS)} restaurants, "
         f"{len(REVIEWS)} reviews, {likes_total} review_likes, "
-        f"{follows_total} follows."
+        f"{follows_total} follows, {Badge.query.count()} badges."
     )
 
 
