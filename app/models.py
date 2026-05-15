@@ -86,12 +86,12 @@ class User(db.Model, UserMixin):
 
     def follow(self, other):
         if other.id != self.id and not self.is_following(other):
-            db.session.add(Follow(follower_id=self.id, followed_id=other.id))
+            db.session.add(Follow(follower=self, followed=other))
 
     def unfollow(self, other):
         link = next((f for f in self.following if f.followed_id == other.id), None)
         if link:
-            db.session.delete(link)
+            self.following.remove(link)
 
     def __repr__(self):
         return f"<User {self.username}>"
