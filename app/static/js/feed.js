@@ -67,12 +67,15 @@ $(document).ready(function () {
 
     const dimension = $btn.data('dimension');
 
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
     fetch(`/reviews/${reviewId}/like/`, {
 
         method: 'POST',
 
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
 
         body: JSON.stringify({

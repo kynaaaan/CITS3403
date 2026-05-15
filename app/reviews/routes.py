@@ -6,6 +6,7 @@ from flask_login import current_user
 
 from app import db
 
+from app.gamification.logic import recompute_user_state
 from app.models import (
     Review,
     ReviewLike,
@@ -58,30 +59,18 @@ def toggle_like(review_id):
     ).first()
 
     if existing_like:
-
         db.session.delete(existing_like)
-
         liked = False
-
     else:
-
-        new_like = ReviewLike(
+        db.session.add(ReviewLike(
             user_id=current_user.id,
             review_id=review.id,
-            dimension=dimension_enum
-        )
-
-        db.session.add(new_like)
-
+            dimension=dimension_enum,
+        ))
         liked = True
-        
-        if dimension_enum == LikeDimension.ACCURACY:
-            review.user.accuracy_xp += 5
-        elif dimension_enum == LikeDimension.WRITING:
-            review.user.writing_xp +=5
-        elif dimension_enum == LikeDimension.BREADTH:
-            review.user.explorer_xp += 5
 
+    db.session.flush()
+    recompute_user_state(review.user)
     db.session.commit()
 
     count = ReviewLike.query.filter_by(
