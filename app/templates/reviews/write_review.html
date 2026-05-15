@@ -15,26 +15,24 @@
                 Share your experience with the Perth food community.
             </p>
 
-            {# CSRF token will render here once Flask-WTF is wired in. #}
-            <form action="{{ url_for('reviews.write') }}" method="POST">
+            <form action="{{ url_for('reviews.write') }}" method="POST" novalidate>
+                {{ form.csrf_token }}
 
-                <!-- Restaurant select -->
+                <!-- Restaurant select — choices populated from the DB by WriteReviewForm. -->
                 <div class="mb-3">
                     <label for="restaurantSelect" class="form-label">Restaurant</label>
                     <select name="restaurant_id" id="restaurantSelect"
-                            class="form-select" required>
-                        <option value="">Select a restaurant</option>
-                        <option value="1">Lalla Rookh</option>
-                        <option value="2">Brika</option>
-                        <option value="3">Bread in Common</option>
-                        <option value="4">Rockpool Bar &amp; Grill</option>
-                        <option value="5">Fuku</option>
-                        <option value="6">Long Chim</option>
-                        <option value="7">Mary Street Bakery</option>
-                        <option value="8">Pleased to Meet You</option>
-                        <option value="9">Bib &amp; Tucker</option>
-                        <option value="10">Lucky Chan's</option>
+                            class="form-select{% if form.restaurant_id.errors %} is-invalid{% endif %}" required>
+                        {% for value, label in form.restaurant_id.choices %}
+                        <option value="{{ value }}"
+                                {% if form.restaurant_id.data == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
                     </select>
+                    {% for err in form.restaurant_id.errors %}
+                    <div class="invalid-feedback d-block">{{ err }}</div>
+                    {% endfor %}
                     <div class="form-text">
                         Can't find it? <a href="{{ url_for('restaurants.add') }}">Add a restaurant</a>.
                     </div>
@@ -50,66 +48,35 @@
                         <i class="bi bi-star" data-value="4" role="radio" aria-label="4 stars"></i>
                         <i class="bi bi-star" data-value="5" role="radio" aria-label="5 stars"></i>
                     </div>
-                    <input type="hidden" name="star_rating" id="starRatingInput" required>
+                    <input type="hidden" name="star_rating" id="starRatingInput"
+                           value="{{ form.star_rating.data or '' }}" required>
+                    {% for err in form.star_rating.errors %}
+                    <div class="text-danger small mt-1">{{ err }}</div>
+                    {% endfor %}
                 </div>
 
                 <!-- Review body -->
                 <div class="mb-3">
                     <label for="bodyInput" class="form-label">Review</label>
-                    <textarea name="body" id="bodyInput" class="form-control"
+                    <textarea name="body" id="bodyInput"
+                              class="form-control{% if form.body.errors %} is-invalid{% endif %}"
                               rows="5" minlength="20" required
-                              placeholder="What did you eat? How was it?"></textarea>
+                              placeholder="What did you eat? How was it?">{{ form.body.data or '' }}</textarea>
+                    {% for err in form.body.errors %}
+                    <div class="invalid-feedback">{{ err }}</div>
+                    {% endfor %}
                 </div>
 
-                <!-- Craving tags -->
+                <!-- Craving tags — loop over CRAVING_CHOICES exposed via form.craving_tags. -->
                 <div class="mb-3">
                     <label class="form-label d-block">Craving tags</label>
                     <div class="d-flex flex-wrap gap-2">
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="hearty" id="tag-hearty">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-hearty">Hearty</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="classy" id="tag-classy">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-classy">Classy</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="spicy" id="tag-spicy">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-spicy">Spicy</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="sweet" id="tag-sweet">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-sweet">Sweet</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="cheap" id="tag-cheap">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-cheap">Cheap</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="healthy" id="tag-healthy">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-healthy">Healthy</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="indulgent" id="tag-indulgent">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-indulgent">Indulgent</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="wine" id="tag-wine">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-wine">Wine</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="cocktails" id="tag-cocktails">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-cocktails">Cocktails</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="pricey" id="tag-pricey">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-pricey">Pricey</label>
-
-                        <input type="checkbox" class="btn-check" name="craving_tags[]"
-                               value="date-night" id="tag-date-night">
-                        <label class="btn btn-outline-dark btn-sm" for="tag-date-night">Date-night</label>
-
+                        {% for slug, label in form.craving_tags.choices %}
+                        <input type="checkbox" class="btn-check" name="craving_tags"
+                               value="{{ slug }}" id="tag-{{ slug }}"
+                               {% if form.craving_tags.data and slug in form.craving_tags.data %}checked{% endif %}>
+                        <label class="btn btn-outline-dark btn-sm" for="tag-{{ slug }}">{{ label }}</label>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -117,7 +84,12 @@
                 <div class="mb-4">
                     <label for="pricePaidInput" class="form-label">Price paid ($, optional)</label>
                     <input type="number" name="price_paid" id="pricePaidInput"
-                           class="form-control" min="0" step="0.01">
+                           class="form-control{% if form.price_paid.errors %} is-invalid{% endif %}"
+                           min="0" step="0.01"
+                           value="{{ form.price_paid.data if form.price_paid.data is not none else '' }}">
+                    {% for err in form.price_paid.errors %}
+                    <div class="invalid-feedback">{{ err }}</div>
+                    {% endfor %}
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">

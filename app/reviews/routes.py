@@ -1,25 +1,51 @@
-from flask import Blueprint, render_template
-from flask import jsonify
-from flask import request
-from flask_login import login_required
-from flask_login import current_user
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
 
 from app import db
 
 from app.gamification.logic import recompute_user_state
 from app.models import (
+    LikeDimension,
     Review,
     ReviewLike,
-    LikeDimension,
 )
+from app.reviews.forms import WriteReviewForm
 
 bp = Blueprint('reviews', __name__)
 
 
-@bp.route('/reviews/write')
+@bp.route('/reviews/write', methods=['GET', 'POST'])
 @login_required
 def write():
-    return render_template('reviews/write_review.html')
+    form = WriteReviewForm()
+
+    # preselect restaurant from ?restaurant=<id> when linked from a restaurant page.
+    if request.method == 'GET':
+        try:
+            preset = int(request.args.get('restaurant', 0))
+            if preset > 0:
+                form.restaurant_id.data = preset
+        except (TypeError, ValueError):
+            pass
+
+    if form.validate_on_submit():
+        review = Review(
+            user_id=current_user.id,
+            restaurant_id=form.restaurant_id.data,
+            star_rating=form.star_rating.data,
+            body=form.body.data.strip(),
+            craving_tags=form.craving_tags.data,
+            price_paid=form.price_paid.data,
+        )
+        db.session.add(review)
+        db.session.flush()
+        recompute_user_state(current_user)
+        db.session.commit()
+
+        flash("Review posted, nice work.", "success")
+        return redirect(url_for('restaurants.detail', id=review.restaurant_id))
+
+    return render_template('reviews/write_review.html', form=form)
 
 @bp.route('/reviews/<int:review_id>/like/', methods=['POST'])
 @login_required

@@ -81,21 +81,26 @@ def compute_recompute_xp(user: User):
     )
 
 
+def _as_aware(dt):
+    """SQLite strips tzinfo on read but freshly flushed rows keep it in
+    memory. Normalise to UTC aware so sort/compare works either side of
+    that boundary."""
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
 def compute_recompute_streak(user: User):
     """
     Reads user reviews ordered by created_at, computes review streak.
     Idempotent — overwrites streak_count and streak_last_review.
     """
-    reviews = sorted(user.reviews, key=lambda x: x.created_at, reverse=True)
+    reviews = sorted(user.reviews, key=lambda x: _as_aware(x.created_at), reverse=True)
     if not reviews:
         user.streak_count = 0
         user.streak_last_review = None
         return
 
     now = datetime.now(timezone.utc)
-    last = reviews[0].created_at
-    if last.tzinfo is None:
-        last = last.replace(tzinfo=timezone.utc)
+    last = _as_aware(reviews[0].created_at)
     user.streak_last_review = last
 
     if (now - last) > timedelta(hours=STREAK_BREAK_HOURS):
