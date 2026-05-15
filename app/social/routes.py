@@ -3,41 +3,20 @@ from flask_login import login_required
 from flask import jsonify
 from flask_login import current_user
 from app import db
-from app.models import User
 from app.models import Review
 from app.models import Badge
+from sqlalchemy import func
+from app.models import User
 
 bp = Blueprint('social', __name__)
 
 @bp.route('/profile/<username>')
 def profile(username):
+    user = User.query.filter(
+        func.lower(User.username) == username.lower()
+    ).first_or_404()
 
-    user = User.query.filter_by(
-        username=username
-    ).first()
-
-    if not user:
-        abort(404)
-    
-    is_owner = (
-        current_user.is_authenticated 
-        and current_user.id == user.id
-    )
-    
-    is_follower = False
-    if current_user.is_authenticated:
-        is_follower = current_user.is_following(user)
-        
-    user_is_private = (
-        not user.profile_is_public
-        and not is_owner
-        and not is_follower
-    
-    )
-    
-    reviews = []
-
-    badges = []
+    user_reviews = sorted(user.reviews, key=lambda r: r.created_at, reverse=True)[:5]
 
     total_xp = 0
 
