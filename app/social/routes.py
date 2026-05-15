@@ -68,4 +68,48 @@ def profile(username):
         user_is_private=user_is_private,
     )
         
-  
+@bp.route('/follow/<username>/', methods=['POST'])
+@login_required
+def follow(username):
+
+    user = User.query.filter_by(
+        username=username
+    ).first_or_404()
+
+    if user.id == current_user.id:
+
+        return jsonify({
+            'error': 'Cannot follow yourself'
+        }), 400
+
+    if not current_user.is_following(user):
+
+        current_user.follow(user)
+
+        db.session.commit()
+
+    return jsonify({
+        'following': True,
+        'follower_count': user.followers.count()
+    })
+
+
+@bp.route('/unfollow/<username>/', methods=['POST'])
+@login_required
+def unfollow(username):
+
+    user = User.query.filter_by(
+        username=username
+    ).first_or_404()
+
+    if current_user.is_following(user):
+
+        current_user.unfollow(user)
+
+        db.session.commit()
+
+    return jsonify({
+        'following': False,
+        'follower_count': user.followers.count()
+    })
+    
