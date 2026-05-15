@@ -10,6 +10,7 @@ Run with:
     flask --app run seed             # idempotent, bails if already seeded
     flask --app run seed --reset     # drop, recreate, reseed
 """
+import random
 import re
 from datetime import datetime, timedelta, timezone
 
@@ -29,6 +30,25 @@ from app.models import (
 
 DEFAULT_PASSWORD = "password"
 RESTAURANT_OWNER_ID = 1
+
+_SYNTHETIC_BODIES = [
+    "Solid spot — happy I tried it. Would come back for the mains.",
+    "Service was a touch slow at peak hour but the food held up.",
+    "Great atmosphere, generous portions. Pricing felt fair for what you get.",
+    "Came on a Tuesday — quiet, relaxed, plates landed quickly. Recommended.",
+    "Mixed feelings — entrees were excellent, mains a bit under-seasoned.",
+    "Genuinely one of the better meals I've had in this suburb lately.",
+    "Cocktails were strong, food was decent. Better for drinks than a sit-down.",
+    "Not the cheapest, but the quality is there. Save it for a special occasion.",
+    "Coffee was great and the brunch menu has nice options. Will be back.",
+    "Overhyped, honestly — fine but nothing to write home about.",
+    "Loved the vibe. Brought friends from interstate and they were impressed.",
+    "Small menu but everything they do, they do well.",
+]
+_ALL_CRAVING_TAGS = [
+    "hearty", "classy", "spicy", "sweet", "cheap", "healthy",
+    "indulgent", "wine", "cocktails", "pricey", "date-night",
+]
 
 _RELATIVE_TIME_RE = re.compile(r"^(\d+)\s+(\w+?)s?\s+ago$", re.IGNORECASE)
 _UNIT_TO_KW = {
@@ -116,15 +136,55 @@ def _seed_reviews_and_likes():
     return likes_total
 
 
+def _seed_synthetic_reviews(target_per_restaurant=8):
+    rng = random.Random(42)
+    user_ids = [u["id"] for u in USERS]
+    now = datetime.now(timezone.utc)
+
+    added = 0
+    likes_added = 0
+    for restaurant in Restaurant.query.all():
+        existing = len(restaurant.reviews)
+        needed = max(0, target_per_restaurant - existing)
+        for _ in range(needed):
+            review = Review(
+                user_id=rng.choice(user_ids),
+                restaurant_id=restaurant.id,
+                star_rating=rng.choices([2, 3, 4, 5], weights=[1, 3, 6, 5])[0],
+                body=rng.choice(_SYNTHETIC_BODIES),
+                craving_tags=rng.sample(_ALL_CRAVING_TAGS, k=rng.randint(1, 3)),
+                price_paid=rng.choice([None, 18, 28, 42, 60, 95]),
+                created_at=now - timedelta(
+                    days=rng.randint(0, 28),
+                    hours=rng.randint(0, 23),
+                    minutes=rng.randint(0, 59),
+                ),
+            )
+            db.session.add(review)
+            db.session.flush()
+            added += 1
+
+            # Sprinkle a few likes per review for non-empty like counters.
+            eligible = [uid for uid in user_ids if uid != review.user_id]
+            for dim in LikeDimension:
+                count = rng.randint(0, 4)
+                for liker in rng.sample(eligible, k=min(count, len(eligible))):
+                    db.session.add(ReviewLike(
+                        user_id=liker, review_id=review.id, dimension=dim,
+                    ))
+                    likes_added += 1
+    return added, likes_added
+
+
 def _seed_follows():
-    """User 1 follows everyone else, so the Following feed has content."""
-    follows = 0
-    for u in USERS:
-        if u["id"] == 1:
-            continue
-        db.session.add(Follow(follower_id=1, followed_id=u["id"]))
-        follows += 1
-    return follows
+    # User 1 follows everyone (gives the Following feed broad content).
+    pairs = {(1, u["id"]) for u in USERS if u["id"] != 1}
+    # Plus a few cross-edges so non-user-1 accounts also have a follow graph.
+    pairs |= {(2, 3), (2, 5), (3, 1), (3, 4), (4, 2), (5, 1), (5, 3)}
+
+    for follower_id, followed_id in pairs:
+        db.session.add(Follow(follower_id=follower_id, followed_id=followed_id))
+    return len(pairs)
 
 
 def seed_database(reset=False):
@@ -138,6 +198,7 @@ def seed_database(reset=False):
     _seed_users()
     _seed_restaurants()
     likes_total = _seed_reviews_and_likes()
+    synthetic_reviews, synthetic_likes = _seed_synthetic_reviews()
     follows_total = _seed_follows()
 
     from app.gamification.logic import recompute_user_state
@@ -149,7 +210,9 @@ def seed_database(reset=False):
     from app.models import Badge
     click.echo(
         f"Seeded {len(USERS)} users, {len(RESTAURANTS)} restaurants, "
-        f"{len(REVIEWS)} reviews, {likes_total} review_likes, "
+        f"{len(REVIEWS) + synthetic_reviews} reviews "
+        f"({synthetic_reviews} synthetic), "
+        f"{likes_total + synthetic_likes} review_likes, "
         f"{follows_total} follows, {Badge.query.count()} badges."
     )
 

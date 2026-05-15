@@ -33,52 +33,32 @@ def profile(username):
     is_follower = False
     if current_user.is_authenticated:
         is_follower = current_user.is_following(user)
-        
-    user_is_private = (
-        not user.profile_is_public
-        and not is_owner
-        and not is_follower
-    
-    )
-    
-    reviews = []
-    badges = []
-    badge_cards = []
-    total_xp = 0
+
+    reviews = Review.query.filter_by(
+        user_id=user.id
+    ).order_by(
+        Review.created_at.desc()
+    ).limit(5).all()
+
+    badges = Badge.query.filter_by(user_id=user.id).all()
+    badge_cards = badge_cards_for(badges)
+
+    total_xp = user.writing_xp + user.accuracy_xp + user.explorer_xp
+
     xp_bars = []
-
-    if not user_is_private:
-
-        reviews = Review.query.filter_by(
-            user_id=user.id
-        ).order_by(
-            Review.created_at.desc()
-        ).limit(5).all()
-
-        badges = Badge.query.filter_by(
-            user_id=user.id
-        ).all()
-        badge_cards = badge_cards_for(badges)
-
-        total_xp = (
-            user.writing_xp
-            + user.accuracy_xp
-            + user.explorer_xp
-        )
-
-        for label, xp, colour in [
-            ('Writer',   user.writing_xp,  '#ff7e5f'),
-            ('Accuracy', user.accuracy_xp, '#feb47b'),
-            ('Explorer', user.explorer_xp, '#28a745'),
-        ]:
-            level, progress, _ = level_for_xp(xp)
-            xp_bars.append({
-                'label': label,
-                'xp': xp,
-                'colour': colour,
-                'level': level,
-                'progress': progress,
-            })
+    for label, xp, colour in [
+        ('Writer',   user.writing_xp,  '#ff7e5f'),
+        ('Accuracy', user.accuracy_xp, '#feb47b'),
+        ('Explorer', user.explorer_xp, '#28a745'),
+    ]:
+        level, progress, _ = level_for_xp(xp)
+        xp_bars.append({
+            'label': label,
+            'xp': xp,
+            'colour': colour,
+            'level': level,
+            'progress': progress,
+        })
 
     follower_count = len(user.followers)
     following_count = len(user.following)
@@ -91,7 +71,6 @@ def profile(username):
         badge_cards=badge_cards,
         total_xp=total_xp,
         xp_bars=xp_bars,
-        user_is_private=user_is_private,
         is_owner=is_owner,
         is_follower=is_follower,
         follower_count=follower_count,
@@ -109,7 +88,6 @@ def dashboard():
     if form.validate_on_submit():
         current_user.username = form.username.data.strip()
         current_user.email = form.email.data.strip().lower()
-        current_user.profile_is_public = form.profile_is_public.data
 
         if form.new_password.data:
             current_user.set_password(form.new_password.data)
@@ -121,7 +99,6 @@ def dashboard():
     if not form.is_submitted():
         form.username.data = current_user.username
         form.email.data = current_user.email
-        form.profile_is_public.data = current_user.profile_is_public
 
     # view model
     reviews = current_user.reviews

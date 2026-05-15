@@ -35,7 +35,6 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(255), nullable=False)
 
     is_restaurant_account = db.Column(db.Boolean, default=False, nullable=False)
-    profile_is_public = db.Column(db.Boolean, default=True, nullable=False)
 
     writing_xp = db.Column(db.Integer, default=0, nullable=False)
     accuracy_xp = db.Column(db.Integer, default=0, nullable=False)
