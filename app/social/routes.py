@@ -2,19 +2,27 @@ from flask import Blueprint, render_template, abort
 from flask_login import login_required
 from flask import jsonify
 from flask_login import current_user
+from sqlalchemy import func
 from app import db
 from app.models import User
 from app.models import Review
 from app.models import Badge
+from app.gamification.logic import level_for_xp
+
+
+def _find_user(username):
+    """Case-insensitive username lookup so /profile/perthfoodie99 and
+    /profile/PerthFoodie99 both resolve to the same user."""
+    return User.query.filter(
+        func.lower(User.username) == username.lower()
+    ).first()
 
 bp = Blueprint('social', __name__)
 
 @bp.route('/profile/<username>')
 def profile(username):
 
-    user = User.query.filter_by(
-        username=username
-    ).first()
+    user = _find_user(username)
 
     if not user:
         abort(404)
@@ -36,10 +44,9 @@ def profile(username):
     )
     
     reviews = []
-
     badges = []
-
     total_xp = 0
+    xp_bars = []
 
     if not user_is_private:
 
@@ -52,19 +59,34 @@ def profile(username):
         badges = Badge.query.filter_by(
             user_id=user.id
         ).all()
-        
+
         total_xp = (
             user.writing_xp
             + user.accuracy_xp
             + user.explorer_xp
         )
-        
+
+        for label, xp, colour in [
+            ('Writer',   user.writing_xp,  '#ff7e5f'),
+            ('Accuracy', user.accuracy_xp, '#feb47b'),
+            ('Explorer', user.explorer_xp, '#28a745'),
+        ]:
+            level, progress, _ = level_for_xp(xp)
+            xp_bars.append({
+                'label': label,
+                'xp': xp,
+                'colour': colour,
+                'level': level,
+                'progress': progress,
+            })
+
     return render_template(
         'social/profile.html',
         user=user,
         reviews=reviews,
         badges=badges,
         total_xp=total_xp,
+        xp_bars=xp_bars,
         user_is_private=user_is_private,
     )
         
@@ -72,9 +94,9 @@ def profile(username):
 @login_required
 def follow(username):
 
-    user = User.query.filter_by(
-        username=username
-    ).first_or_404()
+    user = _find_user(username)
+    if not user:
+        abort(404)
 
     if user.id == current_user.id:
 
@@ -98,9 +120,9 @@ def follow(username):
 @login_required
 def unfollow(username):
 
-    user = User.query.filter_by(
-        username=username
-    ).first_or_404()
+    user = _find_user(username)
+    if not user:
+        abort(404)
 
     if current_user.is_following(user):
 

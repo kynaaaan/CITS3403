@@ -59,27 +59,17 @@
         <!-- ── RIGHT COLUMN: XP bars, badges, recent reviews ───────────── -->
         <div class="col-lg-8">
 
-            {# Placeholder XP curve: each level = 100 XP, progress = xp % 100. #}
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="fw-bold mb-4">Experience levels</h5>
 
-                {% for dim in [
-                    ('Writer',   user.writing_xp,  '#ff7e5f'),
-                    ('Accuracy', user.accuracy_xp, '#feb47b'),
-                    ('Explorer', user.explorer_xp, '#28a745'),
-                ] %}
-                {% set label = dim[0] %}
-                {% set xp = dim[1] %}
-                {% set colour = dim[2] %}
-                {% set level = (xp // 100) + 1 %}
-                {% set progress = xp % 100 %}
+                {% for bar in xp_bars %}
                 <div class="{{ 'mb-4' if not loop.last else 'mb-0' }}">
                     <div class="d-flex justify-content-between small mb-1">
-                        <span class="fw-bold">Level {{ level }} {{ label }}</span>
-                        <span class="text-muted">{{ xp }} XP</span>
+                        <span class="fw-bold">Level {{ bar.level }} {{ bar.label }}</span>
+                        <span class="text-muted">{{ bar.xp }} XP</span>
                     </div>
                     <div class="progress" style="height: 12px; border-radius: 10px;">
-                        <div class="progress-bar" style="width: {{ progress }}%; background-color: {{ colour }};"></div>
+                        <div class="progress-bar" style="width: {{ bar.progress }}%; background-color: {{ bar.colour }};"></div>
                     </div>
                 </div>
                 {% endfor %}

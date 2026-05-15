@@ -9,7 +9,17 @@ EXPLORER_XP_PER_REVIEW    = 5
 EXPLORER_XP_PER_NEW_SUBURB  = 25
 EXPLORER_XP_PER_NEW_CUISINE = 25
 STREAK_BREAK_HOURS        = 48
-XP_PER_LEVEL              = 100 
+XP_PER_LEVEL              = 100
+
+
+def level_for_xp(xp):
+    """
+    Map a raw XP value to (level, progress, xp_to_next).
+    """
+    level = xp // XP_PER_LEVEL + 1
+    progress = xp % XP_PER_LEVEL
+    xp_to_next = XP_PER_LEVEL - progress
+    return level, progress, xp_to_next
 
 def _likes_received_by_dim(user: User):
     """Total likes the user's reviews have received, grouped by dimension."""
