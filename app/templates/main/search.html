@@ -29,6 +29,14 @@
 <div class="feed-wrapper">
   <div class="container py-4">
 
+    <!-- ── ADD RESTAURANT CTA ───────────────────────────────────────── -->
+    <div class="alert alert-light border d-flex justify-content-between align-items-center mb-4">
+      <span><i class="bi bi-lightbulb me-2"></i>Can't find a Perth restaurant you love?</span>
+      <a href="{{ url_for('restaurants.add') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-circle me-1"></i>Add a restaurant
+      </a>
+    </div>
+
     <!-- ── FILTER BAR ────────────────────────────────────────────────── -->
     <div class="card shadow-sm border-0 mb-4">
       <div class="card-body py-3">
