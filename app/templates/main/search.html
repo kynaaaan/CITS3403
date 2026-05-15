@@ -29,6 +29,14 @@
 <div class="feed-wrapper">
   <div class="container py-4">
 
+    <!-- ── ADD RESTAURANT CTA ───────────────────────────────────────── -->
+    <div class="alert alert-light border d-flex justify-content-between align-items-center mb-4">
+      <span><i class="bi bi-lightbulb me-2"></i>Can't find a Perth restaurant you love?</span>
+      <a href="{{ url_for('restaurants.add') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-circle me-1"></i>Add a restaurant
+      </a>
+    </div>
+
     <!-- ── FILTER BAR ────────────────────────────────────────────────── -->
     <div class="card shadow-sm border-0 mb-4">
       <div class="card-body py-3">
@@ -42,7 +50,7 @@
                     aria-label="Filter by suburb">
               <option value="">All suburbs</option>
               {% for slug, label in SUBURB_DISPLAY.items() %}
-              <option value="{{ slug }}">{{ label }}</option>
+              <option value="{{ slug }}" {% if selected_suburb == slug %}selected{% endif %}>{{ label }}</option>
               {% endfor %}
             </select>
           </div>
@@ -55,7 +63,7 @@
                     aria-label="Filter by cuisine">
               <option value="">All cuisines</option>
               {% for slug, label in CUISINE_DISPLAY.items() %}
-              <option value="{{ slug }}">{{ label }}</option>
+              <option value="{{ slug }}" {% if selected_cuisine == slug %}selected{% endif %}>{{ label }}</option>
               {% endfor %}
             </select>
           </div>
@@ -68,7 +76,7 @@
                     aria-label="Filter by price range">
               <option value="">Any price</option>
               {% for val, label in PRICE_DISPLAY.items() %}
-              <option value="{{ val }}">{{ label }}</option>
+              <option value="{{ val }}" {% if selected_price == val %}selected{% endif %}>{{ label }}</option>
               {% endfor %}
             </select>
           </div>
@@ -121,8 +129,8 @@
     </div><!-- end #restaurantGrid -->
 
 
-    <!-- Empty state — shown when no restaurants match the active filters -->
-    <div id="emptyState" class="text-center py-5" style="display:none;">
+    <!-- Empty state shown when no restaurants match the active filters.-->
+    <div id="emptyState" class="text-center py-5" {% if restaurants %}style="display:none;"{% endif %}>
       <i class="bi bi-shop text-muted" style="font-size: 2.5rem;"></i>
       <h6 class="mt-3 text-muted">No restaurants match your filters</h6>
       <p class="text-muted small">Try broadening your search or clearing a filter.</p>
