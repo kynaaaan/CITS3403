@@ -1,9 +1,12 @@
 from flask import Blueprint, render_template, abort
-
+from flask_login import login_required
+from flask import jsonify
+from flask_login import current_user
+from app import db
 from app.models import User
 from app.models import Review
 from app.models import Badge
-from flask_login import current_user
+
 bp = Blueprint('social', __name__)
 
 @bp.route('/profile/<username>')
@@ -56,7 +59,7 @@ def profile(username):
             + user.explorer_xp
         )
         
-        return render_template(
+    return render_template(
         'social/profile.html',
         user=user,
         reviews=reviews,
