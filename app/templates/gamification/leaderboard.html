@@ -23,7 +23,7 @@
                     <button class="nav-link active fw-bold" data-bs-toggle="pill" data-bs-target="#reviewers">Top Reviewers</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#dishes">Top Dishes</button>
+                    <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#dishes">Reviews by Suburb</button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#explorers">Top Explorers</button>
@@ -96,6 +96,13 @@
                 </div>
 
                 <div class="tab-pane fade" id="dishes">
+                    <div class = "row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="p-3 border rounded-4 bg-white" style="height: 420px;">
+                                <canvas id="suburbChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
                     <div class="p-5 text-center">
                         <i class="bi bi-egg-fried text-muted mb-3 opacity-50" style="font-size: 3rem;"></i>
                         <h6 class="text-muted">Trending dishes coming soon!</h6>
@@ -103,9 +110,31 @@
                 </div>
 
                 <div class="tab-pane fade" id="explorers">
+
                     <div class="p-5 text-center">
-                        <i class="bi bi-compass text-muted mb-3 opacity-50" style="font-size: 3rem;"></i>
-                        <h6 class="text-muted">Explorer rankings are being calculated...</h6>
+                        <i 
+                            class="bi bi-compass-fill text-primary mb-3 " 
+                            style="font-size: 3rem;"
+                        ></i>
+                        
+                        <h3 class="fw-bold">
+
+                            {{ prolific_explorer.username }}
+
+                        </h3>
+
+                        <p class="text-muted mb-0">
+
+                            Most Prolific Explorer
+
+                        </p>
+
+                        <h4 class="mt-3">
+
+                            {{ prolific_explorer.explorer_xp }}
+                            Explorer XP
+
+                        </h4>
                     </div>
                 </div>
             </div>
@@ -117,6 +146,20 @@
 {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
 
+        window.topUserLabels =
+            {{ top_user_labels|tojson }};
+
+        window.topUserXp =
+            {{ top_user_xp|tojson }};
+
+        window.suburbLabels =
+            {{ suburb_labels|tojson }};
+
+        window.suburbCounts =
+            {{ suburb_counts|tojson }};
+
+    </script>
     <script src="{{ url_for('static', filename='js/leaderboard.js') }}"></script>
 {% endblock %}
