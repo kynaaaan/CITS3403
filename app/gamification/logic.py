@@ -1,4 +1,5 @@
 from app.models import LikeDimension, User
+from datetime import datetime, timezone, timedelta
 
 WRITING_XP_PER_LIKE       = 10
 WRITING_XP_PER_REVIEW     = 5
@@ -80,12 +81,38 @@ def compute_recompute_xp(user: User):
     )
 
 
-
 def compute_recompute_streak(user: User):
-    """ 
-    Reads user reviews ordered by created_at, computes review streak.
     """
-    pass
+    Reads user reviews ordered by created_at, computes review streak.
+    Idempotent — overwrites streak_count and streak_last_review.
+    """
+    reviews = sorted(user.reviews, key=lambda x: x.created_at, reverse=True)
+    if not reviews:
+        user.streak_count = 0
+        user.streak_last_review = None
+        return
+
+    now = datetime.now(timezone.utc)
+    last = reviews[0].created_at
+    if last.tzinfo is None:
+        last = last.replace(tzinfo=timezone.utc)
+    user.streak_last_review = last
+
+    if (now - last) > timedelta(hours=STREAK_BREAK_HOURS):
+        user.streak_count = 0
+        return
+
+    days = sorted({r.created_at.date() for r in reviews}, reverse=True)
+    streak = 1
+    for i in range(1, len(days)):
+        if (days[i-1] - days[i]).days == 1:
+            streak += 1
+        else:
+            break
+
+    user.streak_count = streak
+    
+
 
 def check_and_award_badges(user: User):
     """
