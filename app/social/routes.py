@@ -2,6 +2,7 @@ from flask import Blueprint, abort, flash, jsonify, redirect, render_template, u
 from flask_login import current_user, login_required
 from sqlalchemy import func
 
+
 from app import db
 from app.gamification.badges import badge_cards_for
 from app.gamification.logic import level_for_xp
@@ -16,6 +17,7 @@ def _find_user(username):
     ).first()
 
 bp = Blueprint('social', __name__)
+
 
 @bp.route('/profile/<username>')
 def profile(username):
