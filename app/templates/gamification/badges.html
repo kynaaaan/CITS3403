@@ -37,7 +37,7 @@ Badge Catalogue — RateFoodPerth
                         <div class="mb-3">
 
                             <i
-                                class="bi bi-award-fill text-warning"
+                                class="bi {{ info.icon }} {{ info.colour_class }}"
                                 style="font-size: 3rem;"
                             ></i>
 
@@ -45,13 +45,20 @@ Badge Catalogue — RateFoodPerth
 
                         <h3 class="fw-bold mb-3">
 
-                            {{ info.title }}
+                            {{ info.label }}
 
                         </h3>
 
-                        <p class="text-muted mb-0">
+                        <p class="text-muted mb-3">
 
                             {{ info.description }}
+
+                        </p>
+                        
+                        <p class="fw-semibold mb-0">
+
+                            Requirement:
+                            {{ info.threshold }}
 
                         </p>
 

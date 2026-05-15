@@ -1,40 +1,12 @@
 from flask import Blueprint, render_template
 from sqlalchemy import func
+from app.gamification.badges import BADGES
 from app import db
 from app.models import User
 from app.models import Review
 from app.models import Restaurant
 
 bp = Blueprint('gamification', __name__)
-bp = Blueprint('gamification', __name__)
-
-BADGE_REQUIREMENTS = {
-
-    "FIRST_BITE": {
-        'title': 'First Bite',
-        'description': 'Write your first review.'
-    },
-
-    "EXPLORER": {
-        'title': 'Explorer',
-        'description': 'Review restaurants across multiple suburbs.'
-    },
-
-    "CRITIC": {
-        'title': 'Critic',
-        'description': 'Earn high writing XP.'
-    },
-}
-
-
-@bp.route('/badges')
-def badges():
-
-    return render_template(
-        'gamification/badges.html',
-
-        badges=BADGE_REQUIREMENTS
-    )
 
 @bp.route('/leaderboard')
 def leaderboard():
@@ -110,3 +82,12 @@ def leaderboard():
         suburb_labels=suburb_labels,
         suburb_counts=suburb_counts,
     )
+    
+@bp.route('/badges')
+def badges():
+
+    return render_template(
+        'gamification/badges.html',
+
+        badges=BADGES
+    )       
