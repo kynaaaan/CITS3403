@@ -1,6 +1,6 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, PasswordField, StringField, SubmitField
+from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import (
     DataRequired,
     Email,
@@ -23,7 +23,6 @@ class ProfileEditForm(FlaskForm):
         'Email',
         validators=[DataRequired(), Email()],
     )
-    profile_is_public = BooleanField('Public profile')
 
     current_password = PasswordField(
         'Current password',
