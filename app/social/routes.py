@@ -1,22 +1,18 @@
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template
+from sqlalchemy import func
 
-from app.mock_data import REVIEWS, enrich_review, user_by_username
+from app.models import User
 
 bp = Blueprint('social', __name__)
 
 
 @bp.route('/profile/<username>')
 def profile(username):
-    user = user_by_username(username)
-    if not user:
-        abort(404)
+    user = User.query.filter(
+        func.lower(User.username) == username.lower()
+    ).first_or_404()
 
-    # This user's reviews, pre-joined with restaurant info, most-recent first.
-    # Mock data is already in chronological order (newest = lower id), so we
-    # just filter and take the top 5.
-    user_reviews = [
-        enrich_review(r) for r in REVIEWS if r["user_id"] == user["id"]
-    ][:5]
+    user_reviews = sorted(user.reviews, key=lambda r: r.created_at, reverse=True)[:5]
 
     return render_template(
         'social/profile.html',
