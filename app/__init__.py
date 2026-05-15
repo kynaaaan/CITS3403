@@ -1,12 +1,21 @@
 from flask import Flask
+from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
 
 from config import Config
 from utils import humanise_time
 
 db = SQLAlchemy()
 migrate = Migrate()
+csrf = CSRFProtect()
+
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.login_message = 'Please log in to continue.'
+login_manager.login_message_category = 'info'
+login_manager.session_protection = 'strong'
 
 
 def create_app(config_class=Config):
@@ -15,6 +24,8 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    login_manager.init_app(app)
+    csrf.init_app(app)
 
     app.jinja_env.filters["humanise_time"] = humanise_time
 

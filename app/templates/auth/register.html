@@ -16,41 +16,58 @@
                     Create an account to review Perth's best food.
                 </p>
 
-                {# CSRF token will render here once Flask-WTF is wired in. #}
-                <form action="{{ url_for('auth.register') }}" method="POST">
+                <form action="{{ url_for('auth.register') }}" method="POST" novalidate>
+                    {{ form.hidden_tag() }}
 
                     <div class="mb-3 position-relative">
                         <label for="usernameInput" class="form-label">Username</label>
                         <i class="bi bi-person input-icon"></i>
                         <input type="text" name="username" id="usernameInput"
-                               class="form-control ps-5" required>
+                               class="form-control ps-5{% if form.username.errors %} is-invalid{% endif %}"
+                               value="{{ form.username.data or '' }}" required>
+                        {% for err in form.username.errors %}
+                          <div class="invalid-feedback d-block">{{ err }}</div>
+                        {% endfor %}
                     </div>
 
                     <div class="mb-3 position-relative">
                         <label for="emailInput" class="form-label">Email</label>
                         <i class="bi bi-envelope input-icon"></i>
                         <input type="email" name="email" id="emailInput"
-                               class="form-control ps-5" required>
+                               class="form-control ps-5{% if form.email.errors %} is-invalid{% endif %}"
+                               value="{{ form.email.data or '' }}" required>
+                        {% for err in form.email.errors %}
+                          <div class="invalid-feedback d-block">{{ err }}</div>
+                        {% endfor %}
                     </div>
 
                     <div class="mb-3 position-relative">
                         <label for="passwordInput" class="form-label">Password</label>
                         <i class="bi bi-lock input-icon"></i>
                         <input type="password" name="password" id="passwordInput"
-                               class="form-control ps-5" required>
+                               class="form-control ps-5{% if form.password.errors %} is-invalid{% endif %}"
+                               required>
                         <div id="passwordError" class="text-danger small mt-1" style="display:none;"></div>
+                        {% for err in form.password.errors %}
+                          <div class="invalid-feedback d-block">{{ err }}</div>
+                        {% endfor %}
                     </div>
 
                     <div class="mb-3 position-relative">
                         <label for="password2Input" class="form-label">Confirm password</label>
                         <i class="bi bi-lock-fill input-icon"></i>
                         <input type="password" name="password2" id="password2Input"
-                               class="form-control ps-5" required>
+                               class="form-control ps-5{% if form.password2.errors %} is-invalid{% endif %}"
+                               required>
+                        {% for err in form.password2.errors %}
+                          <div class="invalid-feedback d-block">{{ err }}</div>
+                        {% endfor %}
                     </div>
 
                     <div class="form-check mb-4">
                         <input class="form-check-input" type="checkbox"
-                               name="is_restaurant_account" id="isRestaurantAccount">
+                               name="is_restaurant_account" id="isRestaurantAccount"
+                               {% if form.is_restaurant_account.data %}checked{% endif %}>
                         <label class="form-check-label small" for="isRestaurantAccount">
                             I'm registering as a <strong>restaurant</strong> (lets you claim and manage your restaurant page)
                         </label>
