@@ -18,18 +18,28 @@
             <form action="{{ url_for('reviews.write') }}" method="POST" novalidate>
                 {{ form.csrf_token }}
 
-                <!-- Restaurant select — choices populated from the DB by WriteReviewForm. -->
+                <!-- Restaurant search. The visible input is for
+                     typing; review.js syncs the chosen name back to the hidden integer ID. -->
                 <div class="mb-3">
-                    <label for="restaurantSelect" class="form-label">Restaurant</label>
-                    <select name="restaurant_id" id="restaurantSelect"
-                            class="form-select{% if form.restaurant_id.errors %} is-invalid{% endif %}" required>
+                    <label for="restaurantSearch" class="form-label">Restaurant</label>
+                    <input type="text"
+                           id="restaurantSearch"
+                           list="restaurantsList"
+                           class="form-control{% if form.restaurant_id.errors %} is-invalid{% endif %}"
+                           autocomplete="off"
+                           placeholder="Type to search…"
+                           required>
+                    <datalist id="restaurantsList">
                         {% for value, label in form.restaurant_id.choices %}
-                        <option value="{{ value }}"
-                                {% if form.restaurant_id.data == value %}selected{% endif %}>
-                            {{ label }}
-                        </option>
+                            {% if value > 0 %}
+                            <option value="{{ label }}" data-id="{{ value }}"></option>
+                            {% endif %}
                         {% endfor %}
-                    </select>
+                    </datalist>
+                    <input type="hidden"
+                           name="restaurant_id"
+                           id="restaurantIdHidden"
+                           value="{{ form.restaurant_id.data if form.restaurant_id.data and form.restaurant_id.data > 0 else '' }}">
                     {% for err in form.restaurant_id.errors %}
                     <div class="invalid-feedback d-block">{{ err }}</div>
                     {% endfor %}
