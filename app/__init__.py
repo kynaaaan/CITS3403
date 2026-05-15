@@ -1,12 +1,15 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
 from config import Config
 from utils import humanise_time
 
 db = SQLAlchemy()
 migrate = Migrate()
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
 
 
 def create_app(config_class=Config):
@@ -15,10 +18,12 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    login_manager.init_app(app)
 
     app.jinja_env.filters["humanise_time"] = humanise_time
 
     from app import models 
+    from app.models import User
 
     from app.auth.routes import bp as auth_bp
     from app.main.routes import bp as main_bp
@@ -45,5 +50,10 @@ def create_app(config_class=Config):
             "CUISINE_DISPLAY": CUISINE_DISPLAY,
             "PRICE_DISPLAY": PRICE_DISPLAY,
         }
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+
+     return User.query.get(int(user_id))
 
     return app
