@@ -48,15 +48,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!form) return;
 
     form.addEventListener('submit', function(e) {
-        const password = document.getElementById('passwordInput').value;
+        const passwordInput = document.getElementById('passwordInput');
+        if (!passwordInput) return;
+
         const errorDiv = document.getElementById('passwordError');
-        const errors = check_password(password);
+        const errors = check_password(passwordInput.value);
 
         if (errors.length > 0) {
             e.preventDefault();
-            errorDiv.innerHTML = errors.join('<br>');
-            errorDiv.style.display = 'block';
-        } else {
+            if (errorDiv) {
+                errorDiv.innerHTML = errors.join('<br>');
+                errorDiv.style.display = 'block';
+            }
+        } else if (errorDiv) {
             errorDiv.style.display = 'none';
         }
     });

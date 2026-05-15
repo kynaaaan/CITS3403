@@ -1,15 +1,19 @@
+from urllib.parse import urlsplit
+
 from flask import Blueprint
+from flask import flash
+from flask import redirect
 from flask import render_template
 from flask import request
-from flask import redirect
 from flask import url_for
-from flask import flash
 
+from flask_login import current_user
+from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
-from flask_login import login_required
 
 from app import db
+from app.auth.forms import LoginForm, RegisterForm
 from app.models import User
 
 bp = Blueprint('auth', __name__)
@@ -17,76 +21,59 @@ bp = Blueprint('auth', __name__)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
 
-    if request.method == 'POST':
+    form = LoginForm()
 
-        username = request.form.get('username')
-        password = request.form.get('password')
+    if form.validate_on_submit():
 
-        user = User.query.filter_by(
-            username=username
-        ).first()
+        user = User.query.filter_by(email=form.email.data).first()
 
-        if user and user.check_password(password):
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid email or password.', 'danger')
+            return redirect(url_for('auth.login'))
 
-            login_user(user)
+        login_user(user, remember=form.remember_me.data)
 
-            return redirect(
-                url_for('main.index')
-            )
+        # Safe-redirect: only allow relative URLs back to our own app.
+        next_url = request.args.get('next')
+        if not next_url or urlsplit(next_url).netloc != '':
+            next_url = url_for('main.index')
 
-        flash('Invalid username or password')
+        return redirect(next_url)
 
-    return render_template('auth/login.html')
+    return render_template('auth/login.html', form=form)
 
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
 
-    if request.method == 'POST':
+    form = RegisterForm()
 
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        existing_user = User.query.filter_by(
-            username=username
-        ).first()
-
-        if existing_user:
-
-            flash('Username already exists')
-
-            return redirect(
-                url_for('auth.register')
-            )
+    if form.validate_on_submit():
 
         user = User(
-            username=username,
-            email=email,
+            username=form.username.data,
+            email=form.email.data,
+            is_restaurant_account=form.is_restaurant_account.data,
         )
-
-        user.set_password(password)
+        user.set_password(form.password.data)
 
         db.session.add(user)
-
         db.session.commit()
 
-        flash('Account created successfully')
+        flash('Account created — please log in.', 'success')
+        return redirect(url_for('auth.login'))
 
-        return redirect(
-            url_for('auth.login')
-        )
-
-    return render_template('auth/register.html')
+    return render_template('auth/register.html', form=form)
 
 
 @bp.route('/logout')
 @login_required
 def logout():
-
     logout_user()
-
-    return redirect(
-        url_for('main.index')
-    )
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('main.index'))

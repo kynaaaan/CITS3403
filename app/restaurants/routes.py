@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, abort
+from flask_login import login_required
 
 from app.mock_data import REVIEWS, enrich_review, restaurant_by_id
 
@@ -29,5 +30,6 @@ def detail(id):
 
 
 @bp.route('/restaurant/add')
+@login_required
 def add():
     return render_template('restaurants/add_restaurant.html')
