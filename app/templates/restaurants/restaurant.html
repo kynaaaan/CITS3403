@@ -127,17 +127,20 @@
 
               <div class="d-flex flex-wrap gap-2">
                 <button class="btn btn-sm btn-outline-secondary like-btn"
-                        data-type="accuracy" aria-label="Like this review for accuracy">
+                        data-review-id="{{ review.id }}" data-dimension="accuracy"
+                        aria-label="Like this review for accuracy">
                   <i class="bi bi-check-circle me-1"></i>Accuracy
                   <span class="like-count">{{ review.like_counts.accuracy }}</span>
                 </button>
                 <button class="btn btn-sm btn-outline-secondary like-btn"
-                        data-type="writing" aria-label="Like this review for writing quality">
+                        data-review-id="{{ review.id }}" data-dimension="writing"
+                        aria-label="Like this review for writing quality">
                   <i class="bi bi-pencil me-1"></i>Writing
                   <span class="like-count">{{ review.like_counts.writing }}</span>
                 </button>
                 <button class="btn btn-sm btn-outline-secondary like-btn"
-                        data-type="breadth" aria-label="Like this review for breadth of detail">
+                        data-review-id="{{ review.id }}" data-dimension="breadth"
+                        aria-label="Like this review for breadth of detail">
                   <i class="bi bi-compass me-1"></i>Breadth
                   <span class="like-count">{{ review.like_counts.breadth }}</span>
                 </button>

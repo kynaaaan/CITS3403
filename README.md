@@ -69,8 +69,40 @@ flask --app run seed --reset             # wipe and reseed
 flask --app run db migrate -m "msg"      # generate a new migration
 flask --app run db upgrade               # apply migrations
 
-python -m unittest discover tests        # unit + integration tests
-python -m unittest tests.test_selenium   # selenium tests (needs chromedriver)
+pytest tests/test_model_logic.py         # unit + integration tests (no server)
+pytest tests/test_selenium.py            # selenium tests (needs running server)
+```
+
+---
+
+## Running the tests
+
+The suite is written for **pytest**, not the `unittest` runner.
+
+### Unit / integration tests
+
+Use the Flask test client.
+
+```bash
+.venv/bin/pytest tests/test_model_logic.py -v
+```
+
+### Selenium tests
+
+Drive a real browser against a running app, so you need two terminals.
+
+**Terminal 1, start the app:**
+
+```bash
+.venv/bin/flask --app run db upgrade
+.venv/bin/flask --app run seed --reset       # known starting state
+.venv/bin/flask --app run run                # serves http://127.0.0.1:5000
+```
+
+**Terminal 2, run the tests:**
+
+```bash
+.venv/bin/pytest tests/test_selenium.py -v
 ```
 
 ---
@@ -93,7 +125,7 @@ app/
   templates/            Jinja2 templates (one folder per blueprint)
 
 migrations/             Alembic revisions
-tests/                  unittest + Selenium tests
+tests/                  pytest unit tests + Selenium end-to-end tests
 config.py               Dev + Production configs
 run.py                  Entry point (`flask --app run`)
 ```
