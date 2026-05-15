@@ -1,10 +1,12 @@
+import os
+
 from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 
-from config import Config
+from config import Config, ProductionConfig
 from utils import humanise_time
 
 db = SQLAlchemy()
@@ -18,9 +20,18 @@ login_manager.login_message_category = 'info'
 login_manager.session_protection = 'strong'
 
 
-def create_app(config_class=Config):
+def create_app(config_class=None):
+    if config_class is None:
+        config_class = (
+            ProductionConfig
+            if os.environ.get('FLASK_CONFIG') == 'production'
+            else Config
+        )
+
     app = Flask(__name__)
     app.config.from_object(config_class)
+    if hasattr(config_class, 'init_app'):
+        config_class.init_app(app)
 
     db.init_app(app)
     migrate.init_app(app, db)

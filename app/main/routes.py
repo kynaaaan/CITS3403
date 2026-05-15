@@ -1,21 +1,59 @@
-from flask import Blueprint
-from flask import render_template
-from flask import request
+from flask import Blueprint, render_template, request
+from flask_login import current_user
+from sqlalchemy import String, cast
 
-from app.models import Restaurant, Review, User
+from app.mock_data import CUISINE_DISPLAY, SUBURB_DISPLAY
+from app.models import Follow, Restaurant, Review, User
 
 bp = Blueprint('main', __name__)
 
 
+LATEST_REVIEWS_LIMIT = 20
+VALID_FEEDS = {'global', 'following', 'suburb', 'cuisine'}
+
+
 @bp.route('/')
 def index():
-    reviews = Review.query.order_by(Review.created_at.desc()).all()
+    feed = request.args.get('feed', 'global').strip().lower()
+    if feed not in VALID_FEEDS:
+        feed = 'global'
+
+    suburb = request.args.get('suburb', '').strip().lower()
+    if suburb and suburb not in SUBURB_DISPLAY:
+        suburb = ''
+
+    cuisine = request.args.get('cuisine', '').strip().lower()
+    if cuisine and cuisine not in CUISINE_DISPLAY:
+        cuisine = ''
+
+    needs_login = (feed == 'following' and not current_user.is_authenticated)
+
+    reviews = []
+    if not needs_login:
+        q = Review.query.order_by(Review.created_at.desc())
+
+        if feed == 'following':
+            # ids of everyone current_user follows.
+            followed_ids = (
+                Follow.query
+                .with_entities(Follow.followed_id)
+                .filter(Follow.follower_id == current_user.id)
+            )
+            q = q.filter(Review.user_id.in_(followed_ids))
+
+        elif feed == 'suburb' and suburb:
+            q = q.join(Review.restaurant).filter(Restaurant.suburb == suburb)
+
+        elif feed == 'cuisine' and cuisine:
+            q = q.join(Review.restaurant).filter(
+                cast(Restaurant.cuisine_tags, String).like(f'%"{cuisine}"%')
+            )
+
+        reviews = q.limit(LATEST_REVIEWS_LIMIT).all()
 
     total_xp = User.writing_xp + User.accuracy_xp + User.explorer_xp
     top_reviewers = User.query.order_by(total_xp.desc()).limit(4).all()
 
-    # avg_rating is a @property so sort Python side.
-    # THIS WILL NEED TO BE MADE MUCH MORE EFFICIENT FOR LARGER N OF RESTAURANTS
     trending_restaurants = sorted(
         Restaurant.query.all(),
         key=lambda r: r.avg_rating,
@@ -25,6 +63,10 @@ def index():
     return render_template(
         'main/index.html',
         reviews=reviews,
+        active_feed=feed,
+        selected_suburb=suburb,
+        selected_cuisine=cuisine,
+        needs_login=needs_login,
         top_reviewers=top_reviewers,
         trending_restaurants=trending_restaurants,
     )
@@ -56,5 +98,3 @@ def search():
         selected_cuisine=cuisine,
         selected_price=price,
     )
-
-
