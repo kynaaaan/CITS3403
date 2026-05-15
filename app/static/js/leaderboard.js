@@ -1,44 +1,97 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const canvas = document.getElementById('xpChart');
-    
-    // Safety check: only run if the chart canvas exists on the current page
-    if (!canvas) return;
+    const xpCanvas =
+        document.getElementById('xpChart');
 
-    const ctx = canvas.getContext('2d');
+    if (xpCanvas) {
+        const xpCtx = xpCanvas.getContext('2d');
+        const gradient =
+            xpCtx.createLinearGradient(0, 0, 0, 400);
 
-    // Create a brand-consistent gradient
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, '#ff7e5f');
-    gradient.addColorStop(1, '#feb47b');
+        gradient.addColorStop(0, '#ff7e5f');
+        gradient.addColorStop(1, '#feb47b');
 
-    // Initialize the Chart
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['User 1', 'User 2', 'User 3', 'User 4', 'User 5'],
-            datasets: [{
-                label: 'XP Gained This Week',
-                data: [1250, 1100, 950, 800, 750],
-                backgroundColor: gradient,
-                borderRadius: 8
-            }]
-        },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false,
-            scales: { 
-                y: { 
-                    beginAtZero: true, 
-                    display: false 
-                }, 
-                x: { 
-                    grid: { display: false },
-                    ticks: { font: { weight: '600' } }
-                } 
+        new Chart(xpCtx, {
+            type: 'bar',
+            data: {
+
+                labels: window.topUserLabels,
+                datasets: [{
+                    label: 'XP Gained This Week',
+                    data: window.topUserXp,
+                    backgroundColor: gradient,
+                    borderRadius: 8
+                }]
             },
-            plugins: { 
-                legend: { display: false } 
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+                        display: false
+                    },
+
+                    x: {
+
+                        grid: {
+                            display: false
+                        },
+
+                        ticks: {
+                            font: {
+                                weight: '600'
+                            }
+                        }
+                    }
+                },
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
             }
-        }
-    });
+        });
+    }
+
+    const suburbCanvas =
+        document.getElementById('suburbChart');
+
+    if (suburbCanvas) {
+
+        const suburbCtx =
+            suburbCanvas.getContext('2d');
+
+        new Chart(suburbCtx, {
+
+            type: 'doughnut',
+
+            data: {
+
+                labels: window.suburbLabels,
+                datasets: [{
+
+                    label: 'Reviews Per Suburb',
+                    data: window.suburbCounts,
+                    borderWidth: 1
+                }]
+            },
+
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
 });
