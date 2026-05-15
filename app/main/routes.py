@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask import render_template
+from flask import request
 
 from flask_login import login_required
 from flask_login import current_user
@@ -34,9 +35,29 @@ def index():
 
 @bp.route('/search')
 def search():
+    suburb  = request.args.get('suburb', '').strip()
+    cuisine = request.args.get('cuisine', '').strip()
+    price   = request.args.get('price', '').strip()
+
+    q = Restaurant.query
+    if suburb:
+        q = q.filter(Restaurant.suburb == suburb)
+    if price:
+        try:
+            q = q.filter(Restaurant.price_range == int(price))
+        except ValueError:
+            pass  # ignore garbage values
+
+    restaurants = q.order_by(Restaurant.name).all()
+    if cuisine:
+        restaurants = [r for r in restaurants if cuisine in (r.cuisine_tags or [])]
+
     return render_template(
         'main/search.html',
-        restaurants=Restaurant.query.all(),
+        restaurants=restaurants,
+        selected_suburb=suburb,
+        selected_cuisine=cuisine,
+        selected_price=price,
     )
 
 
