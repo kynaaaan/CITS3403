@@ -25,6 +25,17 @@
           <span class="badge rounded-pill bg-dark text-light px-3 py-2">{{ PRICE_DISPLAY[restaurant.price_range] }}</span>
         </div>
 
+        {% if top_cravings %}
+        <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+          <span class="text-white-50 small me-1">Patrons most often say:</span>
+          {% for tag, count in top_cravings %}
+          <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+            {{ tag|replace('-', ' ')|title }}
+          </span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="d-flex align-items-center gap-3 flex-wrap">
           <span class="text-warning fs-5">
             {{ macros.stars(restaurant.avg_rating) }}
@@ -35,10 +46,31 @@
       </div>
 
       <div class="col-lg-4 text-lg-end">
-        <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
-           class="btn btn-light px-4 py-2 fw-semibold">
-          <i class="bi bi-pencil-square me-1"></i>Write a review
-        </a>
+        <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+
+          {% if current_user.is_authenticated
+                and current_user.id == restaurant.owner_id %}
+            <a href="{{ url_for('restaurants.edit', id=restaurant.id) }}"
+               class="btn btn-outline-light px-4 py-2 fw-semibold">
+              <i class="bi bi-pencil-square me-1"></i>Edit restaurant
+            </a>
+          {% elif current_user.is_authenticated
+                  and current_user.is_restaurant_account
+                  and restaurant.owner_id is none %}
+            <form action="{{ url_for('restaurants.claim', id=restaurant.id) }}"
+                  method="POST" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-warning px-4 py-2 fw-semibold">
+                <i class="bi bi-patch-check me-1"></i>Claim this restaurant
+              </button>
+            </form>
+          {% endif %}
+
+          <a href="{{ url_for('reviews.write', restaurant=restaurant.id) }}"
+             class="btn btn-light px-4 py-2 fw-semibold">
+            <i class="bi bi-pencil-square me-1"></i>Write a review
+          </a>
+        </div>
       </div>
 
     </div>
@@ -130,6 +162,22 @@
       <!-- ── SIDEBAR ────────────────────────────────────────────────── -->
       <div class="col-lg-4">
 
+        {% if reviews|length >= 2 %}
+        <!-- Rating over time -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-graph-up text-primary me-2"></i>Rating over time
+            </h6>
+            <div style="height: 90px;">
+              <canvas id="ratingSparkline"
+                      data-labels='{{ sparkline_labels|tojson }}'
+                      data-ratings='{{ sparkline_data|tojson }}'></canvas>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
         <!-- Rating breakdown -->
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-body">
@@ -152,6 +200,27 @@
             {% endfor %}
           </div>
         </div>
+
+        {% if followed_authors %}
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-people text-primary me-2"></i>Reviewed by people you follow
+            </h6>
+            <div class="d-flex flex-column gap-2">
+              {% for author in followed_authors %}
+              <a href="{{ url_for('social.profile', username=author.username|lower) }}"
+                 class="d-flex align-items-center text-decoration-none text-dark">
+                <div class="avatar-circle me-2"
+                     style="background-color: {{ author.avatar_colour }};
+                            width: 32px; height: 32px; font-size: 0.85rem;">{{ author.initials }}</div>
+                <span class="fw-semibold">{{ author.username }}</span>
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
 
         <!-- Write review CTA -->
         <div class="card shadow-sm border-0 mb-4">
@@ -178,4 +247,9 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+
+{% if reviews|length >= 2 %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/restaurant_sparkline.js') }}"></script>
+{% endif %}
 {% endblock %}

@@ -39,9 +39,29 @@ class AddRestaurantForm(FlaskForm):
     submit = SubmitField('Add restaurant')
 
     def validate_name(self, field):
-        """Reject a name that already exists in the same suburb (case-insensitive)."""
+        """Reject a name that already exists (case-insensitive)."""
         duplicate = Restaurant.query.filter(
             Restaurant.name.ilike(field.data.strip()),
+        ).first()
+        if duplicate:
+            raise ValidationError(
+                f'"{field.data}" is already listed — '
+                f'<a href="/restaurant/{duplicate.id}">view it here</a>.'
+            )
+
+
+class EditRestaurantForm(AddRestaurantForm):
+    submit = SubmitField('Save changes')
+
+    def __init__(self, *args, restaurant_id=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._restaurant_id = restaurant_id
+
+    def validate_name(self, field):
+        # same rule as add, but allow the restaurant being edited to keep its own name.
+        duplicate = Restaurant.query.filter(
+            Restaurant.name.ilike(field.data.strip()),
+            Restaurant.id != self._restaurant_id,
         ).first()
         if duplicate:
             raise ValidationError(
