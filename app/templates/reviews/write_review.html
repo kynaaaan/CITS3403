@@ -16,7 +16,7 @@
             </p>
 
             <form action="{{ url_for('reviews.write') }}" method="POST" novalidate>
-                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
 
                 <!-- Restaurant search. The visible input is for
                      typing; review.js syncs the chosen name back to the hidden integer ID. -->
