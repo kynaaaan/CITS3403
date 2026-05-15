@@ -38,7 +38,7 @@ import uuid
 
 import pytest
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import ElementClickInterceptedException, TimeoutException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -67,6 +67,19 @@ def unique_user():
 
 def url(path: str) -> str:
     return BASE_URL.rstrip("/") + path
+
+
+def _safe_click(driver, element):
+    """Scroll into view and click; fall back to JS if sticky nav/footer intercepts."""
+    driver.execute_script(
+        "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
+        element,
+    )
+    time.sleep(0.15)
+    try:
+        element.click()
+    except ElementClickInterceptedException:
+        driver.execute_script("arguments[0].click();", element)
 
 
 # ---------------------------------------------------------------------------
@@ -106,7 +119,7 @@ def _register(driver, wait, username, email, password):
     driver.find_element(By.ID, "emailInput").send_keys(email)
     driver.find_element(By.ID, "passwordInput").send_keys(password)
     driver.find_element(By.ID, "password2Input").send_keys(password)
-    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+    _safe_click(driver, driver.find_element(By.CSS_SELECTOR, "button[type='submit']"))
 
 
 def _login(driver, wait, email, password):
@@ -116,7 +129,7 @@ def _login(driver, wait, email, password):
 
     driver.find_element(By.ID, "emailInput").send_keys(email)
     driver.find_element(By.ID, "passwordInput").send_keys(password)
-    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+    _safe_click(driver, driver.find_element(By.CSS_SELECTOR, "button[type='submit']"))
 
 
 def _logout(driver):
@@ -233,7 +246,7 @@ class TestWriteReview:
                 (By.CSS_SELECTOR, "#stars i[data-value='4']")
             )
         )
-        star.click()
+        _safe_click(driver, star)
 
         # Confirm the hidden input was set
         hidden_rating = driver.find_element(By.ID, "starRatingInput").get_attribute("value")
@@ -246,7 +259,7 @@ class TestWriteReview:
         body_input.send_keys(review_body)
 
         # Submit the form
-        driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+        _safe_click(driver, driver.find_element(By.CSS_SELECTOR, "button[type='submit']"))
 
         # Should redirect to the restaurant detail page
         wait.until(EC.url_contains(f"/restaurant/{restaurant_id}"))
@@ -297,15 +310,16 @@ class TestLikeReview:
         wait.until(EC.presence_of_element_located((By.ID, "restaurantSearch")))
         time.sleep(0.5)
 
-        wait.until(
+        star = wait.until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "#stars i[data-value='5']"))
-        ).click()
+        )
+        _safe_click(driver, star)
 
         review_body = f"Author review {uuid.uuid4().hex[:6]}"
         body_input = driver.find_element(By.ID, "bodyInput")
         body_input.clear()
         body_input.send_keys(review_body)
-        driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+        _safe_click(driver, driver.find_element(By.CSS_SELECTOR, "button[type='submit']"))
         wait.until(EC.url_contains(f"/restaurant/{restaurant_id}"))
 
         _logout(driver)
@@ -331,18 +345,18 @@ class TestLikeReview:
         # Find the accuracy like button in the first review card and read count
         accuracy_btn = wait.until(
             EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, ".review-card .like-btn[data-type='accuracy']")
+                (By.CSS_SELECTOR, ".review-card .like-btn[data-dimension='accuracy']")
             )
         )
         count_before = int(accuracy_btn.find_element(By.CSS_SELECTOR, ".like-count").text)
 
         # Step 4 — Click the like button
-        accuracy_btn.click()
+        _safe_click(driver, accuracy_btn)
 
         # Step 5 — Wait for the displayed count to increment (JS updates it)
         def count_incremented(drv):
             btn = drv.find_element(
-                By.CSS_SELECTOR, ".review-card .like-btn[data-type='accuracy']"
+                By.CSS_SELECTOR, ".review-card .like-btn[data-dimension='accuracy']"
             )
             try:
                 new_count = int(btn.find_element(By.CSS_SELECTOR, ".like-count").text)
@@ -354,7 +368,7 @@ class TestLikeReview:
             wait.until(count_incremented)
         except TimeoutException:
             btn = driver.find_element(
-                By.CSS_SELECTOR, ".review-card .like-btn[data-type='accuracy']"
+                By.CSS_SELECTOR, ".review-card .like-btn[data-dimension='accuracy']"
             )
             actual = btn.find_element(By.CSS_SELECTOR, ".like-count").text
             pytest.fail(
@@ -460,10 +474,7 @@ class TestFollowFeed:
       3. follower_user navigates to the home page and switches to the
          'Following' tab — target_user's review must be visible.
 
-    Note: the current implementation marks all review cards as
-    data-feed="global following", so the Following tab shows all reviews.
-    The test verifies the tab switch mechanism works and the review card
-    is visible, which is the intended graded behaviour.
+    The Following feed is server-rendered at /?feed=following (nav link, not JS tabs).
     """
 
     def _create_user_with_review(self, driver, wait):
@@ -486,15 +497,16 @@ class TestFollowFeed:
         wait.until(EC.presence_of_element_located((By.ID, "restaurantSearch")))
         time.sleep(0.5)
 
-        wait.until(
+        star = wait.until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "#stars i[data-value='3']"))
-        ).click()
+        )
+        _safe_click(driver, star)
 
         review_body = f"Following-feed review {uuid.uuid4().hex[:6]}"
         body_input = driver.find_element(By.ID, "bodyInput")
         body_input.clear()
         body_input.send_keys(review_body)
-        driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+        _safe_click(driver, driver.find_element(By.CSS_SELECTOR, "button[type='submit']"))
         wait.until(EC.url_contains(f"/restaurant/{restaurant_id}"))
 
         _logout(driver)
@@ -522,22 +534,14 @@ class TestFollowFeed:
                 (By.CSS_SELECTOR, f"button[data-username='{target_username.lower()}']")
             )
         )
-        follow_btn.click()
+        _safe_click(driver, follow_btn)
 
-        # Brief pause to let any JS / redirect settle
+        # Brief pause to let the follow AJAX request complete
         time.sleep(0.8)
 
-        # Step 4 — Navigate to home page and click the "Following" tab
-        driver.get(url("/"))
+        # Step 4 — Open the server-rendered Following feed
+        driver.get(url("/?feed=following"))
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#feedTabs")))
-
-        following_tab = wait.until(
-            EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, "#feedTabs .feed-tab-btn[data-feed='following']")
-            )
-        )
-        following_tab.click()
-        time.sleep(0.5)  # allow feed.js to show/hide cards
 
         # Step 5 — The target user's review body should be visible in the feed
         visible_review_texts = [
