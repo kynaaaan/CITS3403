@@ -25,7 +25,15 @@ def toggle_like(review_id):
 
     review = Review.query.get_or_404(review_id)
 
-    dimension = request.json.get('dimension')
+    data = request.get_json()
+
+    if not data or 'dimension' not in data:
+
+        return jsonify({
+            'error': 'Missing dimension'
+        }), 400
+
+    dimension = data['dimension']
 
     try:
         dimension_enum = LikeDimension(dimension)
@@ -34,6 +42,12 @@ def toggle_like(review_id):
 
         return jsonify({
             'error': 'Invalid dimension'
+        }), 400
+    
+    if review.user.id == current_user.id:
+
+        return jsonify({
+            'error': 'Cannot like your own review'
         }), 400
 
     existing_like = ReviewLike.query.filter_by(
@@ -59,6 +73,13 @@ def toggle_like(review_id):
         db.session.add(new_like)
 
         liked = True
+        
+        if dimension_enum == LikeDimension.ACCURACY:
+            review.user.accuracy_xp += 5
+        elif dimension_enum == LikeDimension.WRITING:
+            review.user.writing_xp +=5
+        elif dimension_enum == LikeDimension.BREADTH:
+            review.user.explorer_xp += 5
 
     db.session.commit()
 
@@ -71,3 +92,4 @@ def toggle_like(review_id):
         'liked': liked,
         'count': count
     })
+    
