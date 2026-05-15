@@ -1,3 +1,5 @@
+from collections import Counter
+
 from flask import Blueprint, abort, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
@@ -19,11 +21,31 @@ def detail(id):
     for r in reviews:
         distribution[r.star_rating - 1] += 1
 
+    # CRAVING COUNTS
+    craving_counter = Counter()
+    for r in reviews:
+        craving_counter.update(r.craving_tags or [])
+    top_cravings = craving_counter.most_common(5)
+
+    # FOLLOWED AUTHORS COUNT
+    followed_authors = []
+    if current_user.is_authenticated:
+        followed_ids = {f.followed_id for f in current_user.following}
+        seen = set()
+        for r in reviews:
+            if r.user_id in followed_ids and r.user_id not in seen:
+                followed_authors.append(r.user)
+                seen.add(r.user_id)
+                if len(followed_authors) >= 3:
+                    break
+
     return render_template(
         'restaurants/restaurant.html',
         restaurant=restaurant,
         reviews=reviews,
         rating_distribution=distribution,
+        top_cravings=top_cravings,
+        followed_authors=followed_authors,
     )
 
 
