@@ -49,6 +49,21 @@ def add():
     return render_template('restaurants/add_restaurant.html', form=form)
 
 
+@bp.route('/restaurant/manage')
+@login_required
+def manage_redirect():
+    # Resolver shortcut for restaurant accounts: send them straight to their owned page.
+    if not current_user.is_restaurant_account:
+        abort(403)
+
+    owned = Restaurant.query.filter_by(owner_id=current_user.id).first()
+    if owned:
+        return redirect(url_for('restaurants.detail', id=owned.id))
+
+    flash("You haven't claimed a restaurant yet, find your listing and claim it.", 'info')
+    return redirect(url_for('main.search'))
+
+
 @bp.route('/restaurant/<int:id>/claim', methods=['POST'])
 @login_required
 def claim(id):
