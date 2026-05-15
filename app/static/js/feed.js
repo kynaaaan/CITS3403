@@ -60,18 +60,49 @@ $(document).ready(function () {
        count by +1 or -1.
     */
     $(document).on('click', '.like-btn', function () {
-        const $btn = $(this);
-        const $count = $btn.find('.like-count');
-        const currentCount = parseInt($count.text(), 10);
 
-        if ($btn.hasClass('liked')) {
-            $btn.removeClass('liked');
-            $count.text(currentCount - 1);
-        } else {
-            $btn.addClass('liked');
-            $count.text(currentCount + 1);
+    const $btn = $(this);
+
+    const reviewId = $btn.data('review-id');
+
+    const dimension = $btn.data('dimension');
+
+    fetch(`/reviews/${reviewId}/like/`, {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+            dimension: dimension
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.error) {
+            console.error(data.error);
+            return;
         }
+
+        const $count = $btn.find('.like-count');
+
+        $btn.toggleClass('liked', data.liked);
+
+        $count.text(data.count);
+
+    })
+
+    .catch(error => {
+        console.error(error);
     });
+
+});
 
 
     /* 
