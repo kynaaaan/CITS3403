@@ -15,49 +15,61 @@
                 Can't find a restaurant on RateFoodPerth? Add it here so you (and others) can review it.
             </p>
 
-            {# CSRF token will render here once Flask-WTF is wired in. #}
-            <form action="{{ url_for('restaurants.add') }}" method="POST">
+            {# Display any non-field errors (e.g. CSRF failure) #}
+            {% for error in form.errors.get('csrf_token', []) %}
+            <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
 
+            <form action="{{ url_for('restaurants.add') }}" method="POST" novalidate>
+                {{ form.hidden_tag() }}
+
+                {# ── Restaurant name ── #}
                 <div class="mb-3">
-                    <label for="restaurantName" class="form-label">Restaurant name</label>
-                    <input type="text" name="name" id="restaurantName"
-                           class="form-control" placeholder="e.g. Lalla Rookh" required>
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""),
+                                placeholder="e.g. Lalla Rookh") }}
+                    {% for error in form.name.errors %}
+                    <div class="invalid-feedback">{{ error|safe }}</div>
+                    {% endfor %}
                 </div>
 
+                {# ── Suburb ── #}
                 <div class="mb-3">
-                    <label for="suburbSelect" class="form-label">Suburb</label>
-                    <select name="suburb" id="suburbSelect" class="form-select" required>
-                        <option value="">Select a suburb</option>
-                        {% for slug, label in SUBURB_DISPLAY.items() %}
-                        <option value="{{ slug }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
+                    {{ form.suburb.label(class="form-label") }}
+                    {{ form.suburb(class="form-select" + (" is-invalid" if form.suburb.errors else "")) }}
+                    {% for error in form.suburb.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
                 </div>
 
+                {# ── Cuisine tags (multi-select checkboxes) ── #}
                 <div class="mb-3">
-                    <label class="form-label d-block">Cuisine tags</label>
+                    <span class="form-label d-block">Cuisine tags</span>
                     <div class="d-flex flex-wrap gap-3">
-                        {% for slug, label in CUISINE_DISPLAY.items() %}
+                        {% for subfield in form.cuisine_tags %}
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   name="cuisine_tags[]" value="{{ slug }}"
-                                   id="cuisine-{{ slug }}">
-                            <label class="form-check-label" for="cuisine-{{ slug }}">{{ label }}</label>
+                            {{ subfield(class="form-check-input") }}
+                            {{ subfield.label(class="form-check-label") }}
                         </div>
                         {% endfor %}
                     </div>
+                    {% for error in form.cuisine_tags.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
                 </div>
 
+                {# ── Price range ── #}
                 <div class="mb-4">
-                    <label class="form-label d-block">Price range</label>
+                    <span class="form-label d-block">Price range</span>
                     {% set price_descriptors = {1: "Budget", 2: "Mid-range", 3: "Upscale"} %}
-                    {% for tier, symbol in PRICE_DISPLAY.items() %}
+                    {% for subfield in form.price_range %}
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio"
-                               name="price_range" value="{{ tier }}" id="price{{ tier }}"
-                               {% if loop.first %}required{% endif %}>
-                        <label class="form-check-label" for="price{{ tier }}">{{ symbol }} — {{ price_descriptors[tier] }}</label>
+                        {{ subfield(class="form-check-input" + (" is-invalid" if form.price_range.errors else "")) }}
+                        {{ subfield.label(class="form-check-label") }}
                     </div>
+                    {% endfor %}
+                    {% for error in form.price_range.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
                     {% endfor %}
                 </div>
 
