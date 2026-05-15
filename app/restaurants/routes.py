@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template, abort
-from flask_login import login_required
+from flask import Blueprint, flash, redirect, render_template, abort, url_for
+from flask_login import current_user, login_required
 
+from app import db
 from app.mock_data import REVIEWS, enrich_review, restaurant_by_id
+from app.models import Restaurant
+from app.restaurants.forms import AddRestaurantForm
 
 bp = Blueprint('restaurants', __name__)
 
@@ -29,7 +32,23 @@ def detail(id):
     )
 
 
-@bp.route('/restaurant/add')
+@bp.route('/restaurant/add', methods=['GET', 'POST'])
 @login_required
 def add():
-    return render_template('restaurants/add_restaurant.html')
+    form = AddRestaurantForm()
+
+    if form.validate_on_submit():
+        restaurant = Restaurant(
+            name=form.name.data.strip(),
+            suburb=form.suburb.data,
+            cuisine_tags=form.cuisine_tags.data,   # list of slug strings
+            price_range=int(form.price_range.data),
+            created_by=current_user.id,
+        )
+        db.session.add(restaurant)
+        db.session.commit()
+
+        flash(f'"{restaurant.name}" has been added — now write the first review!', 'success')
+        return redirect(url_for('restaurants.detail', id=restaurant.id))
+
+    return render_template('restaurants/add_restaurant.html', form=form)
