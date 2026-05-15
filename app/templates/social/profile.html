@@ -14,8 +14,15 @@
         </div>
         <h2 class="fw-bold">This profile is private</h2>
         <p class="text-muted">Follow this user to see their foodie journey and reviews.</p>
-        <button class="btn btn-primary px-4 mt-2"
-                data-username="{{ user.username|lower }}">Request to follow</button>
+        {% if current_user.is_authenticated and not is_owner %}
+        <button class="btn btn-primary px-4 mt-2 follow-btn"
+                data-username="{{ user.username|lower }}"
+                data-following="{{ 'true' if is_follower else 'false' }}">
+            {{ 'Unfollow' if is_follower else 'Follow' }}
+        </button>
+        {% elif not current_user.is_authenticated %}
+        <a class="btn btn-primary px-4 mt-2" href="{{ url_for('auth.login') }}">Log in to follow</a>
+        {% endif %}
     </div>
 
     {% else %}
@@ -30,11 +37,37 @@
                     {{ user.initials }}
                 </div>
                 <h2 class="mb-0">{{ user.username }}</h2>
-                <p class="text-muted small">Member since April 2026</p>
-                <button class="btn btn-primary w-100 mt-3"
-                        data-username="{{ user.username|lower }}">
-                    Follow
-                </button>
+                <p class="text-muted small">
+                    Member since {{ user.created_at.strftime('%B %Y') }}
+                </p>
+
+                <div class="d-flex justify-content-center gap-4 my-2 small">
+                    <div>
+                        <span class="fw-bold follower-count">{{ follower_count }}</span>
+                        <span class="text-muted">follower{{ '' if follower_count == 1 else 's' }}</span>
+                    </div>
+                    <div>
+                        <span class="fw-bold">{{ following_count }}</span>
+                        <span class="text-muted">following</span>
+                    </div>
+                </div>
+
+                {% if is_owner %}
+                    <a class="btn btn-outline-secondary w-100 mt-2"
+                       href="{{ url_for('social.dashboard') }}">
+                        <i class="bi bi-pencil"></i> Edit profile
+                    </a>
+                {% elif current_user.is_authenticated %}
+                    <button class="btn {{ 'btn-outline-primary' if is_follower else 'btn-primary' }} w-100 mt-2 follow-btn"
+                            data-username="{{ user.username|lower }}"
+                            data-following="{{ 'true' if is_follower else 'false' }}">
+                        {{ 'Unfollow' if is_follower else 'Follow' }}
+                    </button>
+                {% else %}
+                    <a class="btn btn-primary w-100 mt-2" href="{{ url_for('auth.login') }}">
+                        Log in to follow
+                    </a>
+                {% endif %}
             </div>
 
             <div class="card shadow-sm p-4 mb-4">
@@ -59,83 +92,47 @@
         <!-- ── RIGHT COLUMN: XP bars, badges, recent reviews ───────────── -->
         <div class="col-lg-8">
 
-            {# Placeholder XP curve: each level = 100 XP, progress = xp % 100. #}
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="fw-bold mb-4">Experience levels</h5>
 
-                {% for dim in [
-                    ('Writer',   user.writing_xp,  '#ff7e5f'),
-                    ('Accuracy', user.accuracy_xp, '#feb47b'),
-                    ('Explorer', user.explorer_xp, '#28a745'),
-                ] %}
-                {% set label = dim[0] %}
-                {% set xp = dim[1] %}
-                {% set colour = dim[2] %}
-                {% set level = (xp // 100) + 1 %}
-                {% set progress = xp % 100 %}
+                {% for bar in xp_bars %}
                 <div class="{{ 'mb-4' if not loop.last else 'mb-0' }}">
                     <div class="d-flex justify-content-between small mb-1">
-                        <span class="fw-bold">Level {{ level }} {{ label }}</span>
-                        <span class="text-muted">{{ xp }} XP</span>
+                        <span class="fw-bold">Level {{ bar.level }} {{ bar.label }}</span>
+                        <span class="text-muted">{{ bar.xp }} XP</span>
                     </div>
                     <div class="progress" style="height: 12px; border-radius: 10px;">
-                        <div class="progress-bar" style="width: {{ progress }}%; background-color: {{ colour }};"></div>
+                        <div class="progress-bar" style="width: {{ bar.progress }}%; background-color: {{ bar.colour }};"></div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
 
-            {# Badges are still hardcoded — no user.badges field yet. #}
+            {# Badge grid is driven by app.gamification.badges.badge_cards_for(): #}
+            {#   - one card per BadgeType in BADGE_ORDER                          #}
+            {#   - earned cards show full colour; locked cards are greyed + lock  #}
+            {#   - title attribute carries the threshold blurb on hover           #}
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="fw-bold mb-4">Badges earned</h5>
                 <div class="row row-cols-3 row-cols-md-6 g-3 text-center">
-
+                    {% for card in badge_cards %}
                     <div class="col">
-                        <div class="badge-box bg-light p-2 rounded">
-                            <i class="bi bi-award-fill text-warning fs-3"></i>
-                            <div style="font-size: 0.6rem; font-weight: bold;">FIRST BITE</div>
+                        <div class="badge-box bg-light p-2 rounded position-relative
+                                    {% if not card.earned %}opacity-50{% endif %}"
+                             {% if not card.earned %}style="filter: grayscale(1);"{% endif %}
+                             title="{{ card.description }} ({{ card.threshold }})">
+                            <i class="bi {{ card.icon }} fs-3
+                                      {{ card.colour_class if card.earned else 'text-secondary' }}"></i>
+                            {% if not card.earned %}
+                            <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger"
+                               style="font-size: 0.7rem;"></i>
+                            {% endif %}
+                            <div style="font-size: 0.6rem; font-weight: bold;">
+                                {{ card.label|upper }}
+                            </div>
                         </div>
                     </div>
-
-                    <div class="col">
-                        <div class="badge-box bg-light p-2 rounded">
-                            <i class="bi bi-pencil-fill text-primary fs-3"></i>
-                            <div style="font-size: 0.6rem; font-weight: bold;">PEN &amp; FORK</div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="badge-box bg-light p-2 rounded opacity-50 position-relative" style="filter: grayscale(1);">
-                            <i class="bi bi-geo-alt-fill fs-3 text-secondary"></i>
-                            <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger" style="font-size: 0.7rem;"></i>
-                            <div style="font-size: 0.6rem; font-weight: bold;">SUBURB SCOUT</div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="badge-box bg-light p-2 rounded opacity-50 position-relative" style="filter: grayscale(1);">
-                            <i class="bi bi-fire fs-3 text-secondary"></i>
-                            <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger" style="font-size: 0.7rem;"></i>
-                            <div style="font-size: 0.6rem; font-weight: bold;">ON FIRE</div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="badge-box bg-light p-2 rounded opacity-50 position-relative" style="filter: grayscale(1);">
-                            <i class="bi bi-check-circle-fill fs-3 text-secondary"></i>
-                            <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger" style="font-size: 0.7rem;"></i>
-                            <div style="font-size: 0.6rem; font-weight: bold;">RUTHLESSLY ACCURATE</div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="badge-box bg-light p-2 rounded opacity-50 position-relative" style="filter: grayscale(1);">
-                            <i class="bi bi-globe2 fs-3 text-secondary"></i>
-                            <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger" style="font-size: 0.7rem;"></i>
-                            <div style="font-size: 0.6rem; font-weight: bold;">GLOBE TROTTER</div>
-                        </div>
-                    </div>
-
+                    {% endfor %}
                 </div>
             </div>
 
@@ -168,4 +165,9 @@
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/social.js') }}"></script>
 {% endblock %}

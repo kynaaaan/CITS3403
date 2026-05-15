@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}My Dashboard — RateFoodPerth{% endblock %}
+{% block title %}My account — RateFoodPerth{% endblock %}
 
 {% block content %}
 
@@ -9,14 +9,17 @@
     <div class="d-flex justify-content-between align-items-end">
       <div>
         <h1 class="hero-headline mb-2 text-white">
-            My Dashboard<span style="color: #fff;">.</span>
+          My account<span style="color: #fff;">.</span>
         </h1>
-        <p class="hero-subtext mb-0 text-white opacity-75">Manage your stats, settings, and food journey.</p>
+        <p class="hero-subtext mb-0 text-white opacity-75">
+          Manage your details and visibility.
+        </p>
       </div>
       <div class="mb-2">
-        <span class="badge rounded-pill p-2 px-3 shadow-sm notification-pill">
-          <i class="bi bi-bell-fill me-2"></i>3 Notifications
-        </span>
+        <a href="{{ url_for('social.profile', username=current_user.username) }}"
+           class="btn btn-light btn-sm">
+          <i class="bi bi-eye"></i> View public profile
+        </a>
       </div>
     </div>
   </div>
@@ -25,100 +28,189 @@
 <div class="feed-wrapper dashboard-wrapper">
   <div class="container py-4">
     <div class="row g-4">
-      
-      <div class="col-lg-4">
+
+      <!-- ── LEFT COLUMN: edit form ─────────────────────────────────── -->
+      <div class="col-lg-5">
         <div class="card shadow-sm border-0 mb-4 rounded-4">
           <div class="card-body p-4">
-            <h5 class="fw-bold mb-4" style="color: #ff7e5f;">Edit Profile</h5>
+            <h5 class="fw-bold mb-4" style="color: #ff7e5f;">Edit profile</h5>
+
             <div class="text-center mb-4">
-              <div class="position-relative d-inline-block">
-                <img src="https://via.placeholder.com/100" class="rounded-circle border shadow-sm" alt="Avatar">
-                <button class="btn btn-sm btn-dark position-absolute bottom-0 end-0 rounded-circle border-0" style="background-color: #ff7e5f;">
-                  <i class="bi bi-camera"></i>
-                </button>
+              <div class="avatar-circle mx-auto"
+                   style="background-color: {{ current_user.avatar_colour }};
+                          width: 100px; height: 100px; font-size: 2rem;">
+                {{ current_user.initials }}
               </div>
             </div>
-            
-            <form id="profileForm">
+
+            <form method="POST" action="{{ url_for('social.dashboard') }}" novalidate>
+              {{ form.hidden_tag() }}
+
               <div class="mb-3">
-                <label class="form-label small fw-bold">Username</label>
-                <input type="text" class="form-control form-control-sm" value="PerthFoodie">
+                <label for="usernameInput" class="form-label small fw-bold">Username</label>
+                <input type="text" name="username" id="usernameInput"
+                       class="form-control form-control-sm{% if form.username.errors %} is-invalid{% endif %}"
+                       value="{{ form.username.data or '' }}" required>
+                {% for err in form.username.errors %}
+                  <div class="invalid-feedback d-block">{{ err }}</div>
+                {% endfor %}
               </div>
+
               <div class="mb-3">
-                <label class="form-label small fw-bold">Email Address</label>
-                <input type="email" class="form-control form-control-sm" value="student@uwa.edu.au">
+                <label for="emailInput" class="form-label small fw-bold">Email address</label>
+                <input type="email" name="email" id="emailInput"
+                       class="form-control form-control-sm{% if form.email.errors %} is-invalid{% endif %}"
+                       value="{{ form.email.data or '' }}" required>
+                {% for err in form.email.errors %}
+                  <div class="invalid-feedback d-block">{{ err }}</div>
+                {% endfor %}
               </div>
+
+              <div class="form-check form-switch mb-4">
+                <input class="form-check-input" type="checkbox"
+                       name="profile_is_public" id="visibilityToggle"
+                       {% if form.profile_is_public.data %}checked{% endif %}>
+                <label class="form-check-label small fw-bold" for="visibilityToggle">
+                  Public profile
+                </label>
+                <div class="form-text small">
+                  When off, only your followers can see your reviews and badges.
+                </div>
+              </div>
+
               <hr class="my-4">
-              <div class="form-check form-switch mb-3">
-                <input class="form-check-input" type="checkbox" id="visibilityToggle" checked>
-                <label class="form-check-label small fw-bold" for="visibilityToggle">Public Profile Visibility</label>
+              <h6 class="fw-bold small text-muted text-uppercase mb-3">
+                Change password (optional)
+              </h6>
+
+              <div class="mb-3">
+                <label for="currentPwd" class="form-label small fw-bold">Current password</label>
+                <input type="password" name="current_password" id="currentPwd"
+                       class="form-control form-control-sm{% if form.current_password.errors %} is-invalid{% endif %}"
+                       autocomplete="current-password">
+                {% for err in form.current_password.errors %}
+                  <div class="invalid-feedback d-block">{{ err }}</div>
+                {% endfor %}
               </div>
-              <button type="submit" class="btn btn-primary btn-sm w-100 py-2">Save Changes</button>
+
+              <div class="mb-3">
+                <label for="newPwd" class="form-label small fw-bold">New password</label>
+                <input type="password" name="new_password" id="newPwd"
+                       class="form-control form-control-sm{% if form.new_password.errors %} is-invalid{% endif %}"
+                       autocomplete="new-password">
+                {% for err in form.new_password.errors %}
+                  <div class="invalid-feedback d-block">{{ err }}</div>
+                {% endfor %}
+              </div>
+
+              <div class="mb-4">
+                <label for="confirmPwd" class="form-label small fw-bold">Confirm new password</label>
+                <input type="password" name="confirm_password" id="confirmPwd"
+                       class="form-control form-control-sm{% if form.confirm_password.errors %} is-invalid{% endif %}"
+                       autocomplete="new-password">
+                {% for err in form.confirm_password.errors %}
+                  <div class="invalid-feedback d-block">{{ err }}</div>
+                {% endfor %}
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                Save changes
+              </button>
             </form>
           </div>
         </div>
       </div>
 
-      <div class="col-lg-8">
+      <!-- ── RIGHT COLUMN: stats + XP + badges ──────────────────────── -->
+      <div class="col-lg-7">
+
         <div class="row g-3 mb-4 text-center">
           <div class="col-6 col-md-3">
             <div class="card shadow-sm border-0 p-3 rounded-4 h-100">
-              <div class="h4 fw-bold mb-0">42</div>
+              <div class="h4 fw-bold mb-0">{{ review_count }}</div>
               <div class="text-muted x-small text-uppercase fw-semibold">Reviews</div>
             </div>
           </div>
           <div class="col-6 col-md-3">
             <div class="card shadow-sm border-0 p-3 rounded-4 h-100">
-              <div class="h4 fw-bold mb-0" style="color: #ff7e5f;">12</div>
+              <div class="h4 fw-bold mb-0" style="color: #ff7e5f;">{{ suburbs_visited }}</div>
               <div class="text-muted x-small text-uppercase fw-semibold">Suburbs</div>
             </div>
           </div>
           <div class="col-6 col-md-3">
             <div class="card shadow-sm border-0 p-3 rounded-4 h-100">
-              <div class="h4 fw-bold mb-0" style="color: #feb47b;">8</div>
+              <div class="h4 fw-bold mb-0" style="color: #feb47b;">{{ cuisines_reviewed }}</div>
               <div class="text-muted x-small text-uppercase fw-semibold">Cuisines</div>
             </div>
           </div>
           <div class="col-6 col-md-3">
             <div class="card shadow-sm border-0 p-3 rounded-4 h-100">
-              <div class="h4 fw-bold mb-0 text-danger">156</div>
+              <div class="h4 fw-bold mb-0 text-danger">{{ likes_received }}</div>
               <div class="text-muted x-small text-uppercase fw-semibold">Likes</div>
             </div>
           </div>
         </div>
 
         <div class="card shadow-sm border-0 p-4 rounded-4 mb-4">
-          <h5 class="fw-bold mb-3">Level 14 Progression</h5>
-          <div class="xp-progress-wrapper" style="height: 12px;">
-            <div class="xp-progress-fill" style="width: 65%; height: 100%;"></div>
+          <div class="d-flex justify-content-between align-items-baseline mb-2">
+            <h5 class="fw-bold mb-0">Level {{ combined_level }} overall</h5>
+            <span class="text-muted small">{{ total_xp }} total XP</span>
           </div>
-          <p class="text-muted x-small mt-2">350 XP until Level 15</p>
+          <div class="progress" style="height: 12px; border-radius: 10px;">
+            <div class="progress-bar"
+                 style="width: {{ combined_progress }}%; background-color: #ff7e5f;"></div>
+          </div>
+          <p class="text-muted x-small mt-2 mb-0">{{ xp_to_next }} XP until Level {{ combined_level + 1 }}</p>
+
+          {% if current_user.streak_count > 0 %}
           <div class="d-flex align-items-center mt-3 p-3 rounded-3 streak-alert">
             <i class="bi bi-fire text-danger fs-3 me-3"></i>
             <div>
-              <div class="fw-bold">7 Day Streak!</div>
-              <div class="text-muted x-small">You're on fire! Keep it up.</div>
+              <div class="fw-bold">{{ current_user.streak_count }} day streak</div>
+              <div class="text-muted x-small">Reviews break the streak after 48 hours of silence.</div>
             </div>
           </div>
+          {% endif %}
+
+          <hr class="my-4">
+          {% for bar in xp_bars %}
+          <div class="{{ 'mb-3' if not loop.last else 'mb-0' }}">
+            <div class="d-flex justify-content-between small mb-1">
+              <span class="fw-bold">Level {{ bar.level }} {{ bar.label }}</span>
+              <span class="text-muted">{{ bar.xp }} XP</span>
+            </div>
+            <div class="progress" style="height: 8px; border-radius: 10px;">
+              <div class="progress-bar"
+                   style="width: {{ bar.progress }}%; background-color: {{ bar.colour }};"></div>
+            </div>
+          </div>
+          {% endfor %}
         </div>
 
         <div class="card shadow-sm border-0 p-4 rounded-4">
-          <h5 class="fw-bold mb-3">Earned Badges</h5>
-          <div class="d-flex flex-wrap gap-4">
-            <div class="badge-box text-center">
-              <div class="rounded-circle bg-warning bg-opacity-10 p-3 mb-2 mx-auto" style="width: 50px; height: 50px;">
-                <i class="bi bi-pin-map-fill text-warning fs-4"></i>
+          <h5 class="fw-bold mb-3">Badges</h5>
+          <div class="row row-cols-3 row-cols-md-6 g-3 text-center">
+            {% for card in badge_cards %}
+            <div class="col">
+              <div class="badge-box bg-light p-2 rounded position-relative
+                          {% if not card.earned %}opacity-50{% endif %}"
+                   {% if not card.earned %}style="filter: grayscale(1);"{% endif %}
+                   title="{{ card.description }} ({{ card.threshold }})">
+                <i class="bi {{ card.icon }} fs-3
+                          {{ card.colour_class if card.earned else 'text-secondary' }}"></i>
+                {% if not card.earned %}
+                <i class="bi bi-lock-fill position-absolute top-0 end-0 p-1 text-danger"
+                   style="font-size: 0.7rem;"></i>
+                {% endif %}
+                <div style="font-size: 0.6rem; font-weight: bold;">
+                  {{ card.label|upper }}
+                </div>
               </div>
-              <span class="tiny-text d-block">Local Legend</span>
             </div>
-            <div class="badge-box text-center">
-              <div class="rounded-circle bg-primary bg-opacity-10 p-3 mb-2 mx-auto" style="width: 50px; height: 50px;">
-                <i class="bi bi-camera-fill text-primary fs-4"></i>
-              </div>
-              <span class="tiny-text d-block">Paparazzi</span>
-            </div>
+            {% endfor %}
           </div>
         </div>
+
       </div>
     </div>
   </div>
