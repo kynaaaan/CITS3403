@@ -1,4 +1,4 @@
-from app.models import LikeDimension, User
+from app.models import LikeDimension, User, BadgeType, Badge
 from datetime import datetime, timezone, timedelta
 
 WRITING_XP_PER_LIKE       = 10
@@ -111,17 +111,42 @@ def compute_recompute_streak(user: User):
             break
 
     user.streak_count = streak
-    
 
 
 def check_and_award_badges(user: User):
     """
-    Checks badge conditions, adds badges to user if they qualify and dont already have them.
+    Checks badge conditions, adds badges to user if they qualify and don't
+    already have them.
+
+    Depends on writing_xp + streak_count being already populated, so run
+    after compute_recompute_xp and compute_recompute_streak.
     """
-    pass
+    already = {b.badge_type for b in user.badges}
+
+    def award(badge_type):
+        if badge_type not in already:
+            user.badges.append(Badge(badge_type=badge_type))
+            already.add(badge_type)
+
+    likes = _likes_received_by_dim(user)
+
+    if len(user.reviews) >= 1:
+        award(BadgeType.FIRST_BITE)
+    if _unique_suburbs_reviewed(user) >= 5:
+        award(BadgeType.SUBURB_SCOUT)
+    if _unique_cuisines_reviewed(user) >= 6:
+        award(BadgeType.GLOBE_TROTTER)
+    if user.streak_count >= 7:
+        award(BadgeType.ON_FIRE)
+    if user.writing_xp >= 400:
+        award(BadgeType.PEN_AND_FORK)
+    if likes[LikeDimension.ACCURACY] >= 50:
+        award(BadgeType.RUTHLESSLY_ACCURATE)
 
 def recompute_user_state(user: User):
     """
-    Calls all functions: compute_recompute_xp, compute_recompute_streak, check_and_award_badges.
+    Caller controls the transaction, no commit here.
     """
-    pass
+    compute_recompute_xp(user)
+    compute_recompute_streak(user)
+    check_and_award_badges(user)
