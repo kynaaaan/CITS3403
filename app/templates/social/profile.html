@@ -54,8 +54,7 @@
 
                 {% if is_owner %}
                     <a class="btn btn-outline-secondary w-100 mt-2"
-                       href="{{ url_for('social.profile', username=current_user.username) }}#edit"
-                       aria-disabled="true">
+                       href="{{ url_for('social.dashboard') }}">
                         <i class="bi bi-pencil"></i> Edit profile
                     </a>
                 {% elif current_user.is_authenticated %}
