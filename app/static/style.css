@@ -219,13 +219,15 @@ label {
 
 /* ── 9. FEED SECTION ───────────────────────────────────────────────── */
 
-/* White surface below the hero — review cards sit on this */
 .feed-wrapper {
     background-color: rgba(255, 255, 255, 0.92);
     border-radius: 24px 24px 0 0;
-    margin-top: -1.5rem;
     position: relative;
     min-height: 60vh;
+}
+
+.hero-section + .feed-wrapper {
+    margin-top: -1.5rem;
 }
 
 /* Clickable restaurant names */
