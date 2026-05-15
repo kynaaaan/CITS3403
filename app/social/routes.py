@@ -7,6 +7,7 @@ from app import db
 from app.models import User
 from app.models import Review
 from app.models import Badge
+from app.gamification.badges import badge_cards_for
 from app.gamification.logic import level_for_xp
 
 
@@ -45,6 +46,7 @@ def profile(username):
     
     reviews = []
     badges = []
+    badge_cards = []
     total_xp = 0
     xp_bars = []
 
@@ -59,6 +61,7 @@ def profile(username):
         badges = Badge.query.filter_by(
             user_id=user.id
         ).all()
+        badge_cards = badge_cards_for(badges)
 
         total_xp = (
             user.writing_xp
@@ -80,14 +83,22 @@ def profile(username):
                 'progress': progress,
             })
 
+    follower_count = len(user.followers)
+    following_count = len(user.following)
+
     return render_template(
         'social/profile.html',
         user=user,
         reviews=reviews,
         badges=badges,
+        badge_cards=badge_cards,
         total_xp=total_xp,
         xp_bars=xp_bars,
         user_is_private=user_is_private,
+        is_owner=is_owner,
+        is_follower=is_follower,
+        follower_count=follower_count,
+        following_count=following_count,
     )
         
 @bp.route('/follow/<username>/', methods=['POST'])
@@ -112,7 +123,7 @@ def follow(username):
 
     return jsonify({
         'following': True,
-        'follower_count': user.followers.count()
+        'follower_count': len(user.followers),
     })
 
 
@@ -132,6 +143,5 @@ def unfollow(username):
 
     return jsonify({
         'following': False,
-        'follower_count': user.followers.count()
+        'follower_count': len(user.followers),
     })
-    

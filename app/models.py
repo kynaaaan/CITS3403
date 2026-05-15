@@ -7,6 +7,7 @@ from sqlalchemy import Enum, UniqueConstraint
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db, login_manager
+from app.gamification.badges import BadgeType
 
 
 def _utcnow():
@@ -174,18 +175,6 @@ class ReviewLike(db.Model):
     created_at = db.Column(db.DateTime, default=_utcnow, nullable=False)
 
     review = db.relationship("Review", back_populates="likes")
-
-
-class BadgeType(enum.Enum):
-    """
-    Badge types and their accompanying reqs
-    """
-    FIRST_BITE = "first_bite" # First review posted
-    SUBURB_SCOUT = "suburb_scout" # 5+ distinct suburbs reviewed
-    GLOBE_TROTTER = "globe_trotter" # 6+ distinct cuisines reviewed
-    ON_FIRE = "on_fire" # 7 day streak
-    PEN_AND_FORK = "pen_and_fork" # Level 5 Writing XP
-    RUTHLESSLY_ACCURATE = "ruthlessly_accurate"  # 50 accuracy likes received
 
 
 class Follow(db.Model):

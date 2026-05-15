@@ -147,9 +147,9 @@ _REPO_ROOT = _find_repo_root()
 _APP_DIR = os.path.join(_REPO_ROOT, "app")
 
 # We need to import gamification/logic.py without triggering the full Flask
-# application startup.  We mock the two names that logic.py imports from app:
-#   - app.models.LikeDimension
-#   - app.models.User / BadgeType / Badge
+# application startup.  We mock the names that logic.py imports from app:
+#   - app.models.LikeDimension / User / Badge
+#   - app.gamification.badges.BadgeType
 
 class _LikeDimension:
     WRITING  = _Stub(value="writing")
@@ -176,13 +176,18 @@ def _load_logic_module():
     """
     # Fake the `app` package hierarchy
     fake_app = types.ModuleType("app")
+    fake_gamification = types.ModuleType("app.gamification")
+    fake_badges = types.ModuleType("app.gamification.badges")
+    fake_badges.BadgeType = _BadgeType
+
     fake_models = types.ModuleType("app.models")
     fake_models.LikeDimension = _LikeDimension
     fake_models.User          = object          # only used as type hint
-    fake_models.BadgeType     = _BadgeType
     fake_models.Badge         = _Badge
 
     sys.modules.setdefault("app", fake_app)
+    sys.modules.setdefault("app.gamification", fake_gamification)
+    sys.modules["app.gamification.badges"] = fake_badges
     sys.modules["app.models"] = fake_models
 
     logic_path = os.path.join(_APP_DIR, "gamification", "logic.py")
@@ -705,7 +710,7 @@ class TestIntegrationWithInMemorySQLite(unittest.TestCase):
     # --- First Bite badge exactly once (integration) ------------------------
 
     def test_integration_first_bite_awarded_once(self):
-        from app.models import BadgeType
+        from app.gamification.badges import BadgeType
         from app.gamification.logic import recompute_user_state
         db = self.__class__._db
         u  = self._make_user()

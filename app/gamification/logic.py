@@ -1,4 +1,5 @@
-from app.models import LikeDimension, User, BadgeType, Badge
+from app.models import LikeDimension, User, Badge
+from app.gamification.badges import BadgeType
 from datetime import datetime, timezone, timedelta
 
 WRITING_XP_PER_LIKE       = 10
